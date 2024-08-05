@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { Button, Text, Appbar } from 'react-native-paper';
 import axios from 'axios';
 
 const TestCreation = () => {
@@ -43,54 +44,57 @@ const TestCreation = () => {
 
   return (
     <View style={styles.container}>
+      <Appbar.Header>
+        <Appbar.Content title="Create Test" />
+      </Appbar.Header>
       <FlatList
         data={questions}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() => handleSelectQuestion(item)}
-            style={[styles.questionItem, isSelected(item._id) && styles.selectedItem]}
+            style={[
+              styles.questionItem,
+              selectedQuestions.includes(item) && styles.selectedQuestion
+            ]}
           >
-            <Text style={[styles.questionContent, isSelected(item._id) && styles.selectedContent]}>
-              {item.content}
-            </Text>
+            <Text style={styles.questionContent}>{item.content}</Text>
           </TouchableOpacity>
         )}
       />
-      <Button title="Create Test" onPress={handleCreateTest} color="#28A745" />
+      <Button mode="contained" onPress={handleCreateTest} style={styles.button}>
+        Create Test
+      </Button>
       {message ? <Text style={styles.message}>{message}</Text> : null}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    backgroundColor: '#F8F9FA',
-  },
-  questionItem: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#CED4DA',
-    borderRadius: 5,
-    marginBottom: 10,
-  },
-  selectedItem: {
-    backgroundColor: '#E9ECEF',
-  },
-  questionContent: {
-    fontSize: 16,
-    color: '#212529',
-  },
-  selectedContent: {
-    color: '#007BFF',
-    fontWeight: 'bold',
-  },
-  message: {
-    marginTop: 10,
-    color: '#DC3545',
-    textAlign: 'center',
-  },
+    container: {
+      flex: 1,
+      backgroundColor: '#F8F9FA',
+    },
+    questionItem: {
+      padding: 15,
+      borderBottomWidth: 1,
+      borderBottomColor: '#CED4DA',
+    },
+    selectedQuestion: {
+      backgroundColor: '#E9F5E9',
+    },
+    questionContent: {
+      fontSize: 16,
+      color: '#212529',
+    },
+    button: {
+      margin: 20,
+    },
+    message: {
+      marginTop: 10,
+      color: '#DC3545',
+      textAlign: 'center',
+    },
 });
 
 export default TestCreation;

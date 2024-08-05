@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import { TextInput, Button, Text, IconButton } from 'react-native-paper';
 import axios from 'axios';
 
 const QuestionUpload = () => {
@@ -47,57 +48,52 @@ const QuestionUpload = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.label}>Question Content:</Text>
       <TextInput
-        placeholder="Enter question content"
+        label="Question Content"
         value={content}
         onChangeText={setContent}
         style={styles.input}
       />
-
-      <Text style={styles.label}>Difficulty:</Text>
       <TextInput
-        placeholder="Enter difficulty level"
+        label="Difficulty"
         value={difficulty}
         onChangeText={setDifficulty}
         style={styles.input}
       />
-
-      <Text style={styles.label}>Chapter:</Text>
       <TextInput
-        placeholder="Enter chapter"
+        label="Chapter"
         value={chapter}
         onChangeText={setChapter}
         style={styles.input}
       />
-
-      <Text style={styles.label}>Subject:</Text>
       <TextInput
-        placeholder="Enter subject"
+        label="Subject"
         value={subject}
         onChangeText={setSubject}
         style={styles.input}
       />
-
       {choices.map((choice, index) => (
         <View key={index} style={styles.choiceContainer}>
-          <Text style={styles.label}>Choice {index + 1}:</Text>
           <TextInput
-            placeholder="Enter choice text"
+            label={`Choice ${index + 1}`}
             value={choice.text}
             onChangeText={(text) => handleChoiceChange(index, text)}
-            style={styles.input}
+            style={styles.choiceInput}
           />
-          <Button
-            title={`Set Choice ${index + 1} as Correct`}
-            onPress={() => handleChoiceCorrectnessChange(index, true)}
-            color={choice.is_correct ? '#28A745' : '#007BFF'}
+          <IconButton
+            icon={choice.is_correct ? 'check-circle' : 'circle'}
+            color={choice.is_correct ? '#28A745' : '#212529'}
+            size={24}
+            onPress={() => handleChoiceCorrectnessChange(index, !choice.is_correct)}
           />
         </View>
       ))}
-
-      <Button title="Add Choice" onPress={addChoice} color="#007BFF" />
-      <Button title="Submit Question" onPress={handleSubmit} color="#28A745" />
+      <Button mode="contained" onPress={addChoice} style={styles.addButton}>
+        Add Question
+      </Button>
+      <Button mode="contained" onPress={handleSubmit} style={styles.submitButton}>
+        Submit Question
+      </Button>
     </ScrollView>
   );
 };
@@ -107,23 +103,23 @@ const styles = StyleSheet.create({
       padding: 20,
       backgroundColor: '#F8F9FA',
     },
-    label: {
-      fontSize: 16,
-      fontWeight: 'bold',
-      marginBottom: 5,
-      color: '#212529',
-    },
     input: {
-      height: 40,
-      borderColor: '#CED4DA',
-      borderWidth: 1,
-      borderRadius: 5,
-      paddingHorizontal: 10,
       marginBottom: 10,
-      backgroundColor: '#FFFFFF',
     },
     choiceContainer: {
-      marginBottom: 20,
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 10,
+    },
+    choiceInput: {
+      flex: 1,
+      marginRight: 10,
+    },
+    addButton: {
+      marginVertical: 10,
+    },
+    submitButton: {
+      marginVertical: 20,
     },
 });
 

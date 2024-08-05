@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { Button, Text, Appbar } from 'react-native-paper';
 import { UserContext } from './UserContext';
 
 const Home = ({ navigation }) => {
@@ -7,12 +8,33 @@ const Home = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.welcomeText}>Welcome, {user.name}!</Text>
-      <Text style={styles.userType}>User Type: {user.user_type}</Text>
-      <View style={styles.buttonContainer}>
-        <Button title="Upload Question" onPress={() => navigation.navigate('QuestionUpload')} color="#007BFF" />
-        <Button title="Create Test" onPress={() => navigation.navigate('TestCreation')} color="#28A745" />
-        <Button title="View Tests" onPress={() => navigation.navigate('TestList')} color="#FFC107" />
+      <Appbar.Header>
+        <Appbar.Content title="Home" />
+      </Appbar.Header>
+      <View style={styles.content}>
+        <Text style={styles.welcomeText}>Welcome, {user.name}!</Text>
+        <Text style={styles.userType}>User Type: {user.user_type}</Text>
+        <Button
+          mode="contained"
+          onPress={() => navigation.navigate('QuestionUpload')}
+          style={styles.button}
+        >
+          Upload Question
+        </Button>
+        <Button
+          mode="contained"
+          onPress={() => navigation.navigate('TestCreation')}
+          style={styles.button}
+        >
+          Create Test
+        </Button>
+        <Button
+          mode="contained"
+          onPress={() => navigation.navigate('TestList')}
+          style={styles.button}
+        >
+          View Tests
+        </Button>
       </View>
     </View>
   );
@@ -21,25 +43,23 @@ const Home = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
+    },
+    content: {
       padding: 20,
-      backgroundColor: '#F8F9FA',
+      flex: 1,
+      justifyContent: 'center',
     },
     welcomeText: {
       fontSize: 24,
       fontWeight: 'bold',
       marginBottom: 10,
-      color: '#212529',
     },
     userType: {
       fontSize: 18,
       marginBottom: 20,
-      color: '#6C757D',
     },
-    buttonContainer: {
-      width: '100%',
-      marginTop: 20,
+    button: {
+      marginBottom: 10,
     },
 });
 

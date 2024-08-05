@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { TextInput, Button, Text, Appbar } from 'react-native-paper';
 import axios from 'axios';
 import { UserContext } from './UserContext';
 
@@ -52,22 +53,28 @@ const Login = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <TextInput
-        placeholder="Name"
-        value={name}
-        onChangeText={setName}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={styles.input}
-      />
-      <Button title="Register" onPress={handleRegister} color="#007BFF" />
-      <Button title="Login" onPress={handleLogin} color="#28A745" />
-      {message ? <Text style={styles.message}>{message}</Text> : null}
+      <Appbar.Header>
+        <Appbar.Content title="Login" />
+      </Appbar.Header>
+      <View style={styles.content}>
+        <TextInput
+          label="Name"
+          value={name}
+          onChangeText={setName}
+          style={styles.input}
+        />
+        <TextInput
+          label="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          style={styles.input}
+        />
+        <Button mode="contained" onPress={handleLogin} style={styles.button}>
+          Login
+        </Button>
+        {message ? <Text style={styles.message}>{message}</Text> : null}
+      </View>
     </View>
   );
 };
@@ -75,18 +82,17 @@ const Login = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      justifyContent: 'center',
+    },
+    content: {
       padding: 20,
-      backgroundColor: '#F8F9FA',
+      flex: 1,
+      justifyContent: 'center',
     },
     input: {
-      height: 40,
-      borderColor: '#CED4DA',
-      borderWidth: 1,
-      borderRadius: 5,
-      paddingHorizontal: 10,
-      marginBottom: 15,
-      backgroundColor: '#FFFFFF',
+      marginBottom: 10,
+    },
+    button: {
+      marginTop: 10,
     },
     message: {
       marginTop: 10,

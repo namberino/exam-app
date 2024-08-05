@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
+import { Appbar, Button } from 'react-native-paper';
 import { UserContext } from './UserContext';
 
 const TestResult = ({ route, navigation }) => {
@@ -8,8 +9,16 @@ const TestResult = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.scoreText}>Your Score: {score}</Text>
-      <Button title="Go Back to Home" onPress={() => navigation.navigate('Home')} color="#007BFF" />
+      <Appbar.Header>
+        <Appbar.Content title="Test Result" />
+      </Appbar.Header>
+      <View style={styles.resultContainer}>
+        <Text style={styles.resultText}>Your Score:</Text>
+        <Text style={styles.score}>{score}</Text>
+        <Button mode="contained" onPress={() => navigation.navigate('TestList')} style={styles.button}>
+          Back to Test List
+        </Button>
+      </View>
     </View>
   );
 };
@@ -17,16 +26,26 @@ const TestResult = ({ route, navigation }) => {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: 20,
       backgroundColor: '#F8F9FA',
     },
-    scoreText: {
+    resultContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    resultText: {
       fontSize: 24,
       fontWeight: 'bold',
-      marginBottom: 20,
       color: '#212529',
+    },
+    score: {
+      fontSize: 48,
+      fontWeight: 'bold',
+      color: '#28A745',
+      marginVertical: 20,
+    },
+    button: {
+      marginTop: 20,
     },
 });
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Button, StyleSheet } from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { Text, Card, Appbar, IconButton } from 'react-native-paper';
 import axios from 'axios';
 
 const TestList = ({ navigation }) => {
@@ -20,16 +21,28 @@ const TestList = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <Appbar.Header>
+        <Appbar.Content title="Test List" />
+        <Appbar.Action icon="plus" onPress={() => navigation.navigate('TestCreation')} />
+      </Appbar.Header>
       {message ? <Text style={styles.message}>{message}</Text> : null}
       <FlatList
         data={tests}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-          <View style={styles.testItem}>
-            <Text style={styles.testId}>Test ID: {item._id}</Text>
-            <Text style={styles.questionCount}>Questions: {item.questions.length}</Text>
-            <Button title="Take Test" onPress={() => navigation.navigate('TakeTest', { testId: item._id })} color="#007BFF" />
-          </View>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('TakeTest', { testId: item._id })}
+          >
+            <Card style={styles.card}>
+              <Card.Content>
+                <Text style={styles.testTitle}>ID: {item._id.substring(0, 5)}</Text>
+                <Text style={styles.testDescription}>Number of questions: {item.questions.length}</Text>
+              </Card.Content>
+              <Card.Actions>
+                <IconButton icon="chevron-right" size={20} />
+              </Card.Actions>
+            </Card>
+          </TouchableOpacity>
         )}
       />
     </View>
@@ -38,26 +51,25 @@ const TestList = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     container: {
-      padding: 20,
+      flex: 1,
       backgroundColor: '#F8F9FA',
     },
-    testItem: {
-      marginBottom: 20,
-      padding: 15,
-      borderBottomWidth: 1,
-      borderBottomColor: '#CED4DA',
+    card: {
+      margin: 10,
+      borderRadius: 8,
+      elevation: 3,
     },
-    testId: {
-      fontSize: 16,
+    testTitle: {
+      fontSize: 18,
       fontWeight: 'bold',
       color: '#212529',
     },
-    questionCount: {
+    testDescription: {
       fontSize: 14,
       color: '#6C757D',
     },
     message: {
-      marginBottom: 10,
+      margin: 10,
       color: '#DC3545',
       textAlign: 'center',
     },
