@@ -2,4 +2,4 @@
 
 An exam app built with React Native
 
-![app](app.jpg)
+<img src="app.jpg" width="20%" height="20%">
