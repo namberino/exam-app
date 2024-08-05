@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Button } from 'react-native';
+import { View, Text, FlatList, Button, StyleSheet } from 'react-native';
 import axios from 'axios';
 
 const TestList = ({ navigation }) => {
@@ -19,21 +19,48 @@ const TestList = ({ navigation }) => {
   }, []);
 
   return (
-    <View style={{ padding: 20 }}>
-      {message ? <Text>{message}</Text> : null}
+    <View style={styles.container}>
+      {message ? <Text style={styles.message}>{message}</Text> : null}
       <FlatList
         data={tests}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-          <View>
-            <Text>Test ID: {item._id}</Text>
-            <Text>Questions: {item.questions.length}</Text>
-            <Button title="Take Test" onPress={() => navigation.navigate('TakeTest', { testId: item._id })} />
+          <View style={styles.testItem}>
+            <Text style={styles.testId}>Test ID: {item._id}</Text>
+            <Text style={styles.questionCount}>Questions: {item.questions.length}</Text>
+            <Button title="Take Test" onPress={() => navigation.navigate('TakeTest', { testId: item._id })} color="#007BFF" />
           </View>
         )}
       />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+    container: {
+      padding: 20,
+      backgroundColor: '#F8F9FA',
+    },
+    testItem: {
+      marginBottom: 20,
+      padding: 15,
+      borderBottomWidth: 1,
+      borderBottomColor: '#CED4DA',
+    },
+    testId: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: '#212529',
+    },
+    questionCount: {
+      fontSize: 14,
+      color: '#6C757D',
+    },
+    message: {
+      marginBottom: 10,
+      color: '#DC3545',
+      textAlign: 'center',
+    },
+});
 
 export default TestList;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, ScrollView } from 'react-native';
+import { View, Text, TextInput, Button, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 
 const QuestionUpload = () => {
@@ -46,60 +46,85 @@ const QuestionUpload = () => {
   };
 
   return (
-    <ScrollView style={{ padding: 20 }}>
-      <Text>Question Content:</Text>
+    <ScrollView style={styles.container}>
+      <Text style={styles.label}>Question Content:</Text>
       <TextInput
         placeholder="Enter question content"
         value={content}
         onChangeText={setContent}
-        style={{ borderBottomWidth: 1, marginBottom: 10 }}
+        style={styles.input}
       />
 
-      <Text>Difficulty:</Text>
+      <Text style={styles.label}>Difficulty:</Text>
       <TextInput
         placeholder="Enter difficulty level"
         value={difficulty}
         onChangeText={setDifficulty}
-        style={{ borderBottomWidth: 1, marginBottom: 10 }}
+        style={styles.input}
       />
 
-      <Text>Chapter:</Text>
+      <Text style={styles.label}>Chapter:</Text>
       <TextInput
         placeholder="Enter chapter"
         value={chapter}
         onChangeText={setChapter}
-        style={{ borderBottomWidth: 1, marginBottom: 10 }}
+        style={styles.input}
       />
 
-      <Text>Subject:</Text>
+      <Text style={styles.label}>Subject:</Text>
       <TextInput
         placeholder="Enter subject"
         value={subject}
         onChangeText={setSubject}
-        style={{ borderBottomWidth: 1, marginBottom: 10 }}
+        style={styles.input}
       />
 
       {choices.map((choice, index) => (
-        <View key={index} style={{ marginBottom: 10 }}>
-          <Text>Choice {index + 1}:</Text>
+        <View key={index} style={styles.choiceContainer}>
+          <Text style={styles.label}>Choice {index + 1}:</Text>
           <TextInput
             placeholder="Enter choice text"
             value={choice.text}
             onChangeText={(text) => handleChoiceChange(index, text)}
-            style={{ borderBottomWidth: 1, marginBottom: 5 }}
+            style={styles.input}
           />
           <Button
             title={`Set Choice ${index + 1} as Correct`}
             onPress={() => handleChoiceCorrectnessChange(index, true)}
-            color={choice.is_correct ? 'green' : 'blue'}
+            color={choice.is_correct ? '#28A745' : '#007BFF'}
           />
         </View>
       ))}
 
-      <Button title="Add Choice" onPress={addChoice} />
-      <Button title="Submit Question" onPress={handleSubmit} />
+      <Button title="Add Choice" onPress={addChoice} color="#007BFF" />
+      <Button title="Submit Question" onPress={handleSubmit} color="#28A745" />
     </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+    container: {
+      padding: 20,
+      backgroundColor: '#F8F9FA',
+    },
+    label: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      marginBottom: 5,
+      color: '#212529',
+    },
+    input: {
+      height: 40,
+      borderColor: '#CED4DA',
+      borderWidth: 1,
+      borderRadius: 5,
+      paddingHorizontal: 10,
+      marginBottom: 10,
+      backgroundColor: '#FFFFFF',
+    },
+    choiceContainer: {
+      marginBottom: 20,
+    },
+});
 
 export default QuestionUpload;

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { View, TextInput, Button, Text } from 'react-native';
+import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
 import axios from 'axios';
 import { UserContext } from './UserContext';
 
@@ -51,14 +51,48 @@ const Login = ({ navigation }) => {
   };
 
   return (
-    <View style={{ padding: 20 }}>
-      <TextInput placeholder="Name" value={name} onChangeText={setName} />
-      <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
-      <Button title="Register" onPress={handleRegister} />
-      <Button title="Login" onPress={handleLogin} />
-      {message ? <Text>{message}</Text> : null}
+    <View style={styles.container}>
+      <TextInput
+        placeholder="Name"
+        value={name}
+        onChangeText={setName}
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+        style={styles.input}
+      />
+      <Button title="Register" onPress={handleRegister} color="#007BFF" />
+      <Button title="Login" onPress={handleLogin} color="#28A745" />
+      {message ? <Text style={styles.message}>{message}</Text> : null}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'center',
+      padding: 20,
+      backgroundColor: '#F8F9FA',
+    },
+    input: {
+      height: 40,
+      borderColor: '#CED4DA',
+      borderWidth: 1,
+      borderRadius: 5,
+      paddingHorizontal: 10,
+      marginBottom: 15,
+      backgroundColor: '#FFFFFF',
+    },
+    message: {
+      marginTop: 10,
+      color: '#DC3545',
+      textAlign: 'center',
+    },
+});
 
 export default Login;
