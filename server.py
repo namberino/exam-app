@@ -45,14 +45,26 @@ def login():
 @app.route('/questions', methods=['POST'])
 def create_question():
     data = request.get_json()
+    choices = data.get('choices', [])
+    correct_answer = data.get('correct_answer', '')
+
+    # Ensure choices is a list of dicts with text and is_correct
+    formatted_choices = [
+        {'text': choice['text'], 'is_correct': choice['text'] == correct_answer}
+        for choice in choices
+    ]
+
     question = {
         'content': data['content'],
-        'difficulty': data['difficulty'],
-        'chapter': data['chapter'],
-        'subject': data['subject']
+        'difficulty': data.get('difficulty', ''),
+        'chapter': data.get('chapter', ''),
+        'subject': data.get('subject', ''),
+        'choices': formatted_choices,
+        'correct_answer': correct_answer
     }
-    questions.insert_one(question)
-    return jsonify({'message': 'Question created successfully'})
+
+    result = questions.insert_one(question)
+    return jsonify({'_id': str(result.inserted_id)}), 201
 
 @app.route('/questions', methods=['GET'])
 def get_questions():
@@ -96,6 +108,20 @@ def get_test_scores(test_id):
     if not test:
         return jsonify({'error': 'Test not found'}), 404
     return jsonify(test['scores'])
+
+@app.route('/tests/<test_id>/submit', methods=['POST'])
+def submit_test_answer(test_id):
+    data = request.get_json()
+    answers = data['answers']  # answers should be a list of {question_id: answer}
+    
+    test = tests.find_one({'_id': ObjectId(test_id)})
+    if not test:
+        return jsonify({'error': 'Test not found'}), 404
+
+    correct_answers = {str(q['_id']): q['correct_answer'] for q in test['questions']}
+    score = sum(1 for qid, ans in answers.items() if correct_answers.get(qid) == ans)
+
+    return jsonify({'score': score})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

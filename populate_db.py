@@ -9,14 +9,14 @@ db = client.exam_app
 users = db.users
 users.insert_many([
     {
-        'name': 'nick',
+        'name': 'Nick',
         'user_type': 'student',
-        'password': bcrypt.hashpw('password'.encode('utf-8'), bcrypt.gensalt())
+        'password': bcrypt.hashpw('Password'.encode('utf-8'), bcrypt.gensalt())
     },
     {
-        'name': 'sarah',
+        'name': 'Sarah',
         'user_type': 'teacher',
-        'password': bcrypt.hashpw('password'.encode('utf-8'), bcrypt.gensalt())
+        'password': bcrypt.hashpw('Password'.encode('utf-8'), bcrypt.gensalt())
     }
 ])
 
@@ -27,13 +27,27 @@ questions.insert_many([
         'content': 'What is the capital of France?',
         'difficulty': 'easy',
         'chapter': 'Countries',
-        'subject': 'Geography'
+        'subject': 'Geography',
+        'choices': [
+            { 'text': 'Paris', 'is_correct': True },
+            { 'text': 'London', 'is_correct': False },
+            { 'text': 'Rome', 'is_correct': False },
+            { 'text': 'Berlin', 'is_correct': False }
+        ],
+        'correct_answer': 'Paris'
     },
     {
         'content': 'Solve for x: 2x + 3 = 7',
         'difficulty': 'medium',
         'chapter': 'Algebra',
-        'subject': 'Mathematics'
+        'subject': 'Mathematics',
+        'choices': [
+            { 'text': '1', 'is_correct': True },
+            { 'text': '2', 'is_correct': False },
+            { 'text': '3', 'is_correct': False },
+            { 'text': '4', 'is_correct': False }
+        ],
+        'correct_answer': '1'
     }
 ])
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text } from 'react-native';
+import { View, Text, TextInput, Button, ScrollView } from 'react-native';
 import axios from 'axios';
 
 const QuestionUpload = () => {
@@ -7,31 +7,98 @@ const QuestionUpload = () => {
   const [difficulty, setDifficulty] = useState('');
   const [chapter, setChapter] = useState('');
   const [subject, setSubject] = useState('');
-  const [message, setMessage] = useState('');
+  const [choices, setChoices] = useState([{ text: '', is_correct: false }]);
+  const [correctAnswer, setCorrectAnswer] = useState('');
 
-  const handleCreateQuestion = async () => {
+  const handleChoiceChange = (index, text) => {
+    const newChoices = [...choices];
+    newChoices[index].text = text;
+    setChoices(newChoices);
+  };
+
+  const handleChoiceCorrectnessChange = (index, isCorrect) => {
+    const newChoices = choices.map((choice, i) => ({
+      ...choice,
+      is_correct: i === index ? isCorrect : false
+    }));
+    setChoices(newChoices);
+    setCorrectAnswer(choices[index].text); // Set the correct answer
+  };
+
+  const addChoice = () => {
+    setChoices([...choices, { text: '', is_correct: false }]);
+  };
+
+  const handleSubmit = async () => {
     try {
       const response = await axios.post('http://192.168.1.203:5000/questions', {
         content,
         difficulty,
         chapter,
-        subject
+        subject,
+        choices,
+        correct_answer: correctAnswer
       });
-      setMessage(response.data.message);
+      alert('Question uploaded successfully!');
     } catch (error) {
-      setMessage(error.response.data.error);
+      alert('Error uploading question');
     }
   };
 
   return (
-    <View style={{ padding: 20 }}>
-      <TextInput placeholder="Content" value={content} onChangeText={setContent} />
-      <TextInput placeholder="Difficulty" value={difficulty} onChangeText={setDifficulty} />
-      <TextInput placeholder="Chapter" value={chapter} onChangeText={setChapter} />
-      <TextInput placeholder="Subject" value={subject} onChangeText={setSubject} />
-      <Button title="Create Question" onPress={handleCreateQuestion} />
-      {message ? <Text>{message}</Text> : null}
-    </View>
+    <ScrollView style={{ padding: 20 }}>
+      <Text>Question Content:</Text>
+      <TextInput
+        placeholder="Enter question content"
+        value={content}
+        onChangeText={setContent}
+        style={{ borderBottomWidth: 1, marginBottom: 10 }}
+      />
+
+      <Text>Difficulty:</Text>
+      <TextInput
+        placeholder="Enter difficulty level"
+        value={difficulty}
+        onChangeText={setDifficulty}
+        style={{ borderBottomWidth: 1, marginBottom: 10 }}
+      />
+
+      <Text>Chapter:</Text>
+      <TextInput
+        placeholder="Enter chapter"
+        value={chapter}
+        onChangeText={setChapter}
+        style={{ borderBottomWidth: 1, marginBottom: 10 }}
+      />
+
+      <Text>Subject:</Text>
+      <TextInput
+        placeholder="Enter subject"
+        value={subject}
+        onChangeText={setSubject}
+        style={{ borderBottomWidth: 1, marginBottom: 10 }}
+      />
+
+      {choices.map((choice, index) => (
+        <View key={index} style={{ marginBottom: 10 }}>
+          <Text>Choice {index + 1}:</Text>
+          <TextInput
+            placeholder="Enter choice text"
+            value={choice.text}
+            onChangeText={(text) => handleChoiceChange(index, text)}
+            style={{ borderBottomWidth: 1, marginBottom: 5 }}
+          />
+          <Button
+            title={`Set Choice ${index + 1} as Correct`}
+            onPress={() => handleChoiceCorrectnessChange(index, true)}
+            color={choice.is_correct ? 'green' : 'blue'}
+          />
+        </View>
+      ))}
+
+      <Button title="Add Choice" onPress={addChoice} />
+      <Button title="Submit Question" onPress={handleSubmit} />
+    </ScrollView>
   );
 };
 

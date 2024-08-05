@@ -6,6 +6,7 @@ import QuestionUpload from './components/QuestionUpload';
 import TestCreation from './components/TestCreation';
 import Home from './components/Home';
 import TestList from './components/TestList';
+import TakeTest from './components/TakeTest';
 
 const Stack = createStackNavigator();
 
@@ -18,6 +19,7 @@ const App = () => {
         <Stack.Screen name="QuestionUpload" component={QuestionUpload} />
         <Stack.Screen name="TestCreation" component={TestCreation} />
         <Stack.Screen name="TestList" component={TestList} />
+        <Stack.Screen name="TakeTest" component={TakeTest} />
       </Stack.Navigator>
     </NavigationContainer>
   );
