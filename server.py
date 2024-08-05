@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from pymongo import MongoClient
 import bcrypt
+from bson.objectid import ObjectId
 
 app = Flask(__name__)
 CORS(app)
@@ -75,13 +76,22 @@ def get_questions():
 
 @app.route('/tests', methods=['POST'])
 def create_test():
-    data = request.get_json()
-    test = {
-        'questions': data['questions'],
-        'scores': {}
-    }
-    test_id = tests.insert_one(test).inserted_id
-    return jsonify({'message': 'Test created successfully', 'test_id': str(test_id)})
+    try:
+        data = request.get_json()
+        question_ids = data['questions']
+
+        # Convert question IDs from string to ObjectId
+        formatted_question_ids = [ObjectId(q_id) for q_id in question_ids]
+
+        test = {
+            'questions': formatted_question_ids,
+            'scores': {}
+        }
+        
+        test_id = tests.insert_one(test).inserted_id
+        return jsonify({'message': 'Test created successfully', 'test_id': str(test_id)}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
 
 @app.route('/tests', methods=['GET'])
 def get_tests():
@@ -90,7 +100,6 @@ def get_tests():
         test['_id'] = str(test['_id'])
         test['questions'] = [str(q) for q in test['questions']]
     return jsonify(result)
-
 
 @app.route('/tests/<test_id>', methods=['POST'])
 def submit_test(test_id):
@@ -103,22 +112,38 @@ def submit_test(test_id):
     return jsonify({'message': 'Test submitted successfully'})
 
 @app.route('/tests/<test_id>', methods=['GET'])
-def get_test_scores(test_id):
-    test = tests.find_one({'_id': ObjectId(test_id)})
-    if not test:
-        return jsonify({'error': 'Test not found'}), 404
-    return jsonify(test['scores'])
+def get_test(test_id):
+    try:
+        test = db.tests.find_one({'_id': ObjectId(test_id)})
+        if not test:
+            return jsonify({'error': 'Test not found'}), 404
+
+        questions = db.questions.find({'_id': {'$in': [ObjectId(q_id) for q_id in test['questions']]}})
+        question_list = []
+        for question in questions:
+            question_list.append({
+                '_id': str(question['_id']),
+                'content': question['content'],
+                'choices': question['choices']
+            })
+
+        return jsonify({'questions': question_list})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/tests/<test_id>/submit', methods=['POST'])
 def submit_test_answer(test_id):
     data = request.get_json()
-    answers = data['answers']  # answers should be a list of {question_id: answer}
+    answers = data['answers']  # answers should be a dictionary of {question_id: answer}
     
     test = tests.find_one({'_id': ObjectId(test_id)})
     if not test:
         return jsonify({'error': 'Test not found'}), 404
 
-    correct_answers = {str(q['_id']): q['correct_answer'] for q in test['questions']}
+    question_ids = test['questions']
+    questions = db.questions.find({'_id': {'$in': [ObjectId(q_id) for q_id in question_ids]}})
+
+    correct_answers = {str(q['_id']): q['correct_answer'] for q in questions}
     score = sum(1 for qid, ans in answers.items() if correct_answers.get(qid) == ans)
 
     return jsonify({'score': score})

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList } from 'react-native';
+import { View, Text, Button, TouchableOpacity, FlatList, Alert } from 'react-native';
 import axios from 'axios';
 
 const TakeTest = ({ route, navigation }) => {
@@ -20,14 +20,25 @@ const TakeTest = ({ route, navigation }) => {
     fetchTest();
   }, [testId]);
 
-  const handleAnswerChange = (questionId, answer) => {
+  const handleChoiceSelect = (questionId, choiceText) => {
     setAnswers(prevAnswers => ({
       ...prevAnswers,
-      [questionId]: answer,
+      [questionId]: choiceText
     }));
   };
 
   const submitTest = async () => {
+    const unansweredQuestions = questions.filter(q => !answers[q._id]);
+
+    if (unansweredQuestions.length > 0) {
+      Alert.alert(
+        'Incomplete',
+        `Please answer the following questions:\n${unansweredQuestions.map(q => q.content).join('\n')}`,
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+
     try {
       const response = await axios.post(`http://192.168.1.203:5000/tests/${testId}/submit`, { answers });
       const { score } = response.data;
@@ -44,12 +55,19 @@ const TakeTest = ({ route, navigation }) => {
         data={questions}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-          <View>
+          <View style={{ marginBottom: 20 }}>
             <Text>{item.content}</Text>
-            <TextInput
-              placeholder="Your answer"
-              onChangeText={(text) => handleAnswerChange(item._id, text)}
-            />
+            {item.choices.map((choice, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => handleChoiceSelect(item._id, choice.text)}
+                style={{ padding: 10, borderBottomWidth: 1 }}
+              >
+                <Text style={{ color: answers[item._id] === choice.text ? 'green' : 'black' }}>
+                  {choice.text}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </View>
         )}
       />
