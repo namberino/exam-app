@@ -10,6 +10,7 @@ const QuestionUpload = () => {
   const [subject, setSubject] = useState('');
   const [choices, setChoices] = useState([{ text: '', is_correct: false }]);
   const [correctAnswer, setCorrectAnswer] = useState('');
+  const [message, setMessage] = useState('');
 
   const handleChoiceChange = (index, text) => {
     const newChoices = [...choices];
@@ -40,9 +41,16 @@ const QuestionUpload = () => {
         choices,
         correct_answer: correctAnswer
       });
-      alert('Question uploaded successfully!');
+      setMessage('Question uploaded successfully!');
+      // Clear the form fields
+      setContent('');
+      setDifficulty('');
+      setChapter('');
+      setSubject('');
+      setChoices([{ text: '', is_correct: false }]);
+      setCorrectAnswer('');
     } catch (error) {
-      alert('Error uploading question');
+      setMessage('Error uploading question');
     }
   };
 
@@ -89,11 +97,12 @@ const QuestionUpload = () => {
         </View>
       ))}
       <Button mode="contained" onPress={addChoice} style={styles.addButton}>
-        Add Question
+        Add
       </Button>
       <Button mode="contained" onPress={handleSubmit} style={styles.submitButton}>
         Submit Question
       </Button>
+      {message ? <Text style={styles.message}>{message}</Text> : null}
     </ScrollView>
   );
 };
@@ -116,10 +125,15 @@ const styles = StyleSheet.create({
       marginRight: 10,
     },
     addButton: {
-      marginVertical: 10,
+      marginVertical: 0,
     },
     submitButton: {
       marginVertical: 20,
+    },
+    message: {
+      marginTop: 10,
+      color: '#28D46A',
+      textAlign: 'center',
     },
 });
 
