@@ -5,6 +5,7 @@ import Login from './components/Login';
 import QuestionUpload from './components/QuestionUpload';
 import TestCreation from './components/TestCreation';
 import Home from './components/Home';
+import TestList from './components/TestList';
 
 const Stack = createStackNavigator();
 
@@ -16,6 +17,7 @@ const App = () => {
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="QuestionUpload" component={QuestionUpload} />
         <Stack.Screen name="TestCreation" component={TestCreation} />
+        <Stack.Screen name="TestList" component={TestList} />
       </Stack.Navigator>
     </NavigationContainer>
   );

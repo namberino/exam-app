@@ -10,6 +10,7 @@ const Home = ({ route, navigation }) => {
       <Text>User Type: {user.user_type}</Text>
       <Button title="Upload Question" onPress={() => navigation.navigate('QuestionUpload')} />
       <Button title="Create Test" onPress={() => navigation.navigate('TestCreation')} />
+      <Button title="View Tests" onPress={() => navigation.navigate('TestList')} />
     </View>
   );
 };

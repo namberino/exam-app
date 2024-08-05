@@ -71,6 +71,15 @@ def create_test():
     test_id = tests.insert_one(test).inserted_id
     return jsonify({'message': 'Test created successfully', 'test_id': str(test_id)})
 
+@app.route('/tests', methods=['GET'])
+def get_tests():
+    result = list(tests.find())
+    for test in result:
+        test['_id'] = str(test['_id'])
+        test['questions'] = [str(q) for q in test['questions']]
+    return jsonify(result)
+
+
 @app.route('/tests/<test_id>', methods=['POST'])
 def submit_test(test_id):
     data = request.get_json()
