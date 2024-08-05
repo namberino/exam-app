@@ -35,7 +35,7 @@ const TestList = ({ navigation }) => {
           >
             <Card style={styles.card}>
               <Card.Content>
-                <Text style={styles.testTitle}>ID: {item._id.substring(0, 5)}</Text>
+                <Text style={styles.testTitle}>ID: {item.name}</Text>
                 <Text style={styles.testDescription}>Number of questions: {item.questions.length}</Text>
               </Card.Content>
               <Card.Actions>

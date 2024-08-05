@@ -79,13 +79,15 @@ def create_test():
     try:
         data = request.get_json()
         question_ids = data['questions']
+        name = data.get('name', '')
 
         # Convert question IDs from string to ObjectId
         formatted_question_ids = [ObjectId(q_id) for q_id in question_ids]
 
         test = {
             'questions': formatted_question_ids,
-            'scores': {}
+            'scores': {},
+            'name': name
         }
         
         test_id = tests.insert_one(test).inserted_id
@@ -99,6 +101,7 @@ def get_tests():
     for test in result:
         test['_id'] = str(test['_id'])
         test['questions'] = [str(q) for q in test['questions']]
+        test['name'] = test.get('name', '')
     return jsonify(result)
 
 @app.route('/tests/<test_id>', methods=['POST'])

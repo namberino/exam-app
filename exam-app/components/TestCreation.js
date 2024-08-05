@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
 import { Button, Text, Appbar } from 'react-native-paper';
 import axios from 'axios';
 
@@ -7,6 +7,7 @@ const TestCreation = () => {
   const [questions, setQuestions] = useState([]);
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [message, setMessage] = useState('');
+  const [testName, setTestName] = useState('');
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -30,11 +31,19 @@ const TestCreation = () => {
   };
 
   const handleCreateTest = async () => {
+    if (!testName.trim()) {
+      setMessage('Test name is required');
+      return;
+    }
+
     try {
       const response = await axios.post('http://192.168.1.203:5000/tests', {
+        name: testName,
         questions: selectedQuestions.map(q => q._id)
       });
       setMessage(response.data.message);
+      setTestName('');
+      setSelectedQuestions([]);
     } catch (error) {
       setMessage(error.response?.data?.error || 'Error creating test');
     }
@@ -47,6 +56,12 @@ const TestCreation = () => {
       <Appbar.Header>
         <Appbar.Content title="Create Test" />
       </Appbar.Header>
+      <TextInput
+        placeholder="Enter test name"
+        value={testName}
+        onChangeText={setTestName}
+        style={styles.input}
+      />
       <FlatList
         data={questions}
         keyExtractor={(item) => item._id}
@@ -55,7 +70,7 @@ const TestCreation = () => {
             onPress={() => handleSelectQuestion(item)}
             style={[
               styles.questionItem,
-              selectedQuestions.includes(item) && styles.selectedQuestion
+              isSelected(item._id) && styles.selectedQuestion
             ]}
           >
             <Text style={styles.questionContent}>{item.content}</Text>
@@ -74,6 +89,16 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: '#F8F9FA',
+      padding: 20,
+    },
+    input: {
+      height: 50,
+      borderColor: '#CED4DA',
+      borderWidth: 1,
+      borderRadius: 8,
+      paddingHorizontal: 15,
+      marginBottom: 20,
+      backgroundColor: '#FFFFFF',
     },
     questionItem: {
       padding: 15,
@@ -88,11 +113,11 @@ const styles = StyleSheet.create({
       color: '#212529',
     },
     button: {
-      margin: 20,
+      marginVertical: 20,
     },
     message: {
       marginTop: 10,
-      color: '#DC3545',
+      color: '#28D46A',
       textAlign: 'center',
     },
 });

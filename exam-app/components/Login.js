@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     },
     message: {
       marginTop: 10,
-      color: '#DC3545',
+      color: '#28D46A',
       textAlign: 'center',
     },
 });
