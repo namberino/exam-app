@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, Button } from 'react-native';
+import { UserContext } from './UserContext';
 
-const Home = ({ route, navigation }) => {
-  const { user } = route.params;
+const Home = ({ navigation }) => {
+  const { user, setUser } = useContext(UserContext);
 
   return (
     <View style={{ padding: 20 }}>

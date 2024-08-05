@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, TextInput, Button, Text } from 'react-native';
 import axios from 'axios';
+import { UserContext } from './UserContext';
 
 const Login = ({ navigation }) => {
+  const {user, setUser} = useContext(UserContext);
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -35,7 +37,8 @@ const Login = ({ navigation }) => {
       console.log('Login response:', response);
       setMessage(response.data.message);
       if (response.data.user) {
-        navigation.navigate('Home', { user: response.data.user });
+        setUser(response.data.user);
+        navigation.navigate('Home');
       }
     } catch (error) {
       console.error('Login error:', error);

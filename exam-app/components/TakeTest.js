@@ -42,7 +42,7 @@ const TakeTest = ({ route, navigation }) => {
     try {
       const response = await axios.post(`http://192.168.1.203:5000/tests/${testId}/submit`, { answers });
       const { score } = response.data;
-      navigation.navigate('Home', { score });
+      navigation.navigate('TestResult', { score });
     } catch (error) {
       setMessage('Error submitting test');
     }
