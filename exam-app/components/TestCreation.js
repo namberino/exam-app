@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
-import { Button, Text, Appbar } from 'react-native-paper';
+import { View, StyleSheet, FlatList, TouchableOpacity, TextInput, SectionList } from 'react-native';
+import { Button, Text, Appbar, Card } from 'react-native-paper';
 import axios from 'axios';
 import { UserContext } from './UserContext';
 
@@ -9,6 +9,9 @@ const TestCreation = () => {
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [message, setMessage] = useState('');
   const [testName, setTestName] = useState('');
+  const [studentQuery, setStudentQuery] = useState('');
+  const [studentResults, setStudentResults] = useState([]);
+  const [assignedStudents, setAssignedStudents] = useState([]);
   const { user } = useContext(UserContext);
 
   useEffect(() => {
@@ -32,6 +35,33 @@ const TestCreation = () => {
     }
   };
 
+  const searchStudents = async (query) => {
+    try {
+      const response = await axios.get(`http://192.168.1.203:5000/search_students?query=${query}`);
+      setStudentResults(response.data);
+    } catch (error) {
+      console.error('Error searching students', error);
+    }
+  };
+
+  useEffect(() => {
+    if (studentQuery) {
+      searchStudents(studentQuery);
+    } else {
+      setStudentResults([]);
+    }
+  }, [studentQuery]);
+
+  const handleAddStudent = (student) => {
+    if (!assignedStudents.some(s => s._id === student._id)) {
+      setAssignedStudents([...assignedStudents, student]);
+    }
+  };
+
+  const handleRemoveStudent = (studentId) => {
+    setAssignedStudents(assignedStudents.filter(s => s._id !== studentId));
+  };
+
   const handleCreateTest = async () => {
     if (!testName.trim()) {
       setMessage('Test name is required');
@@ -42,11 +72,13 @@ const TestCreation = () => {
       const response = await axios.post('http://192.168.1.203:5000/tests', {
         name: testName,
         questions: selectedQuestions.map(q => q._id),
-        user_id: user.userId
+        user_id: user.userId,
+        assigned_students: assignedStudents.map(s => s._id),
       });
       setMessage(response.data.message);
       setTestName('');
       setSelectedQuestions([]);
+      setAssignedStudents([]);
     } catch (error) {
       setMessage(error.response?.data?.error || 'Error creating test');
     }
@@ -54,30 +86,81 @@ const TestCreation = () => {
 
   const isSelected = (questionId) => selectedQuestions.some(q => q._id === questionId);
 
+  const renderItem = ({ item, section }) => {
+    if (section.title === 'Student Search Results') {
+      return (
+        <TouchableOpacity
+          onPress={() => handleAddStudent(item)}
+          style={styles.studentItem}
+        >
+          <Text style={styles.studentName}>{item.name}</Text>
+        </TouchableOpacity>
+      );
+    }
+
+    if (section.title === 'Assigned Students') {
+      return (
+        <Card key={item._id} style={styles.assignedStudentCard}>
+          <View style={styles.assignedStudentItem}>
+            <Text style={styles.studentName}>{item.name}</Text>
+            <Button onPress={() => handleRemoveStudent(item._id)} mode="contained" style={styles.removeButton}>
+              Remove
+            </Button>
+          </View>
+        </Card>
+      );
+    }
+
+    if (section.title === 'Questions') {
+      return (
+        <TouchableOpacity
+          onPress={() => handleSelectQuestion(item)}
+          style={[
+            styles.questionItem,
+            isSelected(item._id) && styles.selectedQuestion
+          ]}
+        >
+          <Text style={styles.questionContent}>{item.content}</Text>
+        </TouchableOpacity>
+      );
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Appbar.Header>
         <Appbar.Content title="Create Test" />
       </Appbar.Header>
-      <TextInput
-        placeholder="Enter test name"
-        value={testName}
-        onChangeText={setTestName}
-        style={styles.input}
-      />
-      <FlatList
-        data={questions}
+      <SectionList
+        sections={[
+          { title: 'Student Search Results', data: studentResults },
+          { title: 'Assigned Students', data: assignedStudents },
+          { title: 'Questions', data: questions },
+        ]}
         keyExtractor={(item) => item._id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => handleSelectQuestion(item)}
-            style={[
-              styles.questionItem,
-              isSelected(item._id) && styles.selectedQuestion
-            ]}
-          >
-            <Text style={styles.questionContent}>{item.content}</Text>
-          </TouchableOpacity>
+        renderItem={renderItem}
+        ListHeaderComponent={() => (
+          <View style={styles.headerContainer}>
+            <TextInput
+              placeholder="Enter test name"
+              value={testName}
+              onChangeText={setTestName}
+              style={styles.input}
+            />
+            <Text style={styles.subTitle}>Search for students:</Text>
+            <TextInput
+              placeholder="Search for students"
+              value={studentQuery}
+              onChangeText={setStudentQuery}
+              style={styles.input}
+            />
+            {assignedStudents.length === 0 && <Text>No students assigned yet.</Text>}
+          </View>
+        )}
+        renderSectionHeader={({ section }) => (
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionHeaderText}>{section.title}</Text>
+          </View>
         )}
       />
       <Button mode="contained" onPress={handleCreateTest} style={styles.button}>
@@ -89,40 +172,86 @@ const TestCreation = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#F8F9FA',
-      padding: 20,
-    },
-    input: {
-      height: 50,
-      borderColor: '#CED4DA',
-      borderWidth: 1,
-      borderRadius: 8,
-      paddingHorizontal: 15,
-      marginBottom: 20,
-      backgroundColor: '#FFFFFF',
-    },
-    questionItem: {
-      padding: 15,
-      borderBottomWidth: 1,
-      borderBottomColor: '#CED4DA',
-    },
-    selectedQuestion: {
-      backgroundColor: '#E9F5E9',
-    },
-    questionContent: {
-      fontSize: 16,
-      color: '#212529',
-    },
-    button: {
-      marginVertical: 20,
-    },
-    message: {
-      marginTop: 10,
-      color: '#28D46A',
-      textAlign: 'center',
-    },
+  container: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+    padding: 20,
+  },
+  headerContainer: {
+    marginBottom: 20,
+  },
+  input: {
+    height: 50,
+    borderColor: '#CED4DA',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    marginBottom: 20,
+    backgroundColor: '#FFFFFF',
+  },
+  subTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#343A40',
+  },
+  sectionHeader: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    backgroundColor: '#E9ECEF',
+  },
+  sectionHeaderText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#495057',
+  },
+  studentItem: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#CED4DA',
+  },
+  studentName: {
+    fontSize: 16,
+    color: '#212529',
+  },
+  assignedStudentsContainer: {
+    marginVertical: 20,
+  },
+  assignedStudentCard: {
+    marginBottom: 10,
+    backgroundColor: '#FFF',
+    borderRadius: 8,
+    elevation: 2,
+  },
+  assignedStudentItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 15,
+  },
+  removeButton: {
+    backgroundColor: '#FF6B6B',
+  },
+  questionItem: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#CED4DA',
+  },
+  selectedQuestion: {
+    backgroundColor: '#E9F5E9',
+  },
+  questionContent: {
+    fontSize: 16,
+    color: '#212529',
+  },
+  button: {
+    marginVertical: 20,
+  },
+  message: {
+    marginTop: 10,
+    color: '#28D46A',
+    textAlign: 'center',
+  },
 });
 
 export default TestCreation;

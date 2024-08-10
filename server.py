@@ -96,14 +96,17 @@ def create_test():
         question_ids = data['questions']
         name = data.get('name', '')
         user_id = data.get('user_id')
+        assigned_students = data['assigned_students']
 
         # Convert question IDs from string to ObjectId
         formatted_question_ids = [ObjectId(q_id) for q_id in question_ids]
+        assigned_student_ids = [ObjectId(s_id) for s_id in assigned_students]
 
         test = {
             'questions': formatted_question_ids,
             'scores': {},
             'name': name,
+            'assigned_students': assigned_student_ids,
             'creator_id': ObjectId(user_id)
         }
         
@@ -114,14 +117,13 @@ def create_test():
 
 @app.route('/tests', methods=['GET'])
 def get_tests():
-    user_id = request.args.get('user_id')  # Pass user ID as a query parameter
-    user_id = ObjectId(user_id)
+    user_id = ObjectId(request.args.get('user_id'))  # Pass user ID as a query parameter
     user = db.users.find_one({'_id': user_id})
 
     if user['user_type'] == 'teacher':
         found_tests = tests.find({'creator_id': user_id})
     else:
-        found_tests = tests.find()  # Students can view all tests
+        found_tests = tests.find({'assigned_students': user_id })
 
     test_list = []
     for test in found_tests:
@@ -194,6 +196,27 @@ def submit_test_answer(test_id):
     score = sum(1 for qid, ans in answers.items() if correct_answers.get(qid) == ans)
 
     return jsonify({'score': score})
+
+@app.route('/search_students', methods=['GET'])
+def search_students():
+    query = request.args.get('query')
+    students = db.users.find({'name': {'$regex': query, '$options': 'i'}, 'user_type': 'student'})
+    student_list = [{'name': student['name'], '_id': str(student['_id'])} for student in students]
+    return jsonify(student_list)
+
+@app.route('/assign_students', methods=['POST'])
+def assign_students():
+    data = request.json
+    test_id = ObjectId(data['test_id'])
+    student_ids = [ObjectId(student_id) for student_id in data['student_ids']]
+
+    # Update the test with the assigned students
+    db.tests.update_one(
+        {'_id': test_id},
+        {'$addToSet': {'students_assigned': {'$each': student_ids}}}
+    )
+
+    return jsonify({'message': 'Students assigned successfully!'}), 200
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
