@@ -1,24 +1,30 @@
 import React, { useContext, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { TextInput, Button, Text, Appbar } from 'react-native-paper';
+import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { UserContext } from './UserContext';
 
 const Login = ({ navigation }) => {
-  const {user, setUser} = useContext(UserContext);
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [userType, setUserType] = useState('student');
+  const [isRegistering, setIsRegistering] = useState(false);
+  const { setUser } = useContext(UserContext);
 
   const handleRegister = async () => {
     try {
       const response = await axios.post('http://192.168.1.203:5000/register', {
         name,
         password,
-        user_type: 'student'
+        user_type: userType
       });
       console.log('Register response:', response);
+      setIsRegistering(false);
       setMessage(response.data.message);
+      setName('');
+      setPassword('');
     } catch (error) {
       console.error('Register error:', error);
       if (error.response && error.response.data) {
@@ -31,30 +37,19 @@ const Login = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://192.168.1.203:5000/login', {
-        name,
-        password
-      });
-      console.log('Login response:', response);
-      setMessage(response.data.message);
-      if (response.data.user) {
-        setUser(response.data.user);
-        navigation.navigate('Home');
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      if (error.response && error.response.data) {
-        setMessage(error.response.data.error);
-      } else {
-        setMessage('An error occurred during login.');
-      }
+      const response = await axios.post('http://192.168.1.203:5000/login', { name, password });
+      setUser({ name: response.data.user.name, userType: response.data.user.user_type });
+      navigation.navigate('Home');
+      setMessage("Logged in");
+    } catch (err) {
+      setMessage('Invalid credentials');
     }
   };
 
   return (
     <View style={styles.container}>
       <Appbar.Header>
-        <Appbar.Content title="Login" />
+        <Appbar.Content title={isRegistering ? "Register" : "Login"} />
       </Appbar.Header>
       <View style={styles.content}>
         <TextInput
@@ -70,9 +65,33 @@ const Login = ({ navigation }) => {
           secureTextEntry
           style={styles.input}
         />
-        <Button mode="contained" onPress={handleLogin} style={styles.button}>
-          Login
-        </Button>
+
+        {isRegistering && (
+          <Picker
+            selectedValue={userType}
+            onValueChange={(itemValue) => setUserType(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Student" value="student" />
+            <Picker.Item label="Teacher" value="teacher" />
+          </Picker>
+        )}
+
+        {!isRegistering ? (
+          <>
+            <Button mode="contained" onPress={handleLogin} style={styles.button}>
+              Login
+            </Button>
+            <Button mode="outlined" onPress={() => setIsRegistering(true)} style={styles.button}>
+              Register
+            </Button>
+          </>
+        ) : (
+          <Button mode="contained" onPress={handleRegister} style={styles.button}>
+            Create Account
+          </Button>
+        )}
+
         {message ? <Text style={styles.message}>{message}</Text> : null}
       </View>
     </View>

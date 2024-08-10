@@ -13,7 +13,9 @@ const Home = ({ navigation }) => {
       </Appbar.Header>
       <View style={styles.content}>
         <Text style={styles.welcomeText}>Welcome, {user.name}!</Text>
-        <Text style={styles.userType}>User Type: {user.user_type}</Text>
+        <Text style={styles.userType}>User Type: {user.userType}</Text>
+
+        {user.userType === 'teacher' && (
         <Button
           mode="contained"
           onPress={() => navigation.navigate('QuestionUpload')}
@@ -21,6 +23,9 @@ const Home = ({ navigation }) => {
         >
           Upload Question
         </Button>
+        )}
+
+        {user.userType === 'teacher' && (
         <Button
           mode="contained"
           onPress={() => navigation.navigate('TestCreation')}
@@ -28,6 +33,8 @@ const Home = ({ navigation }) => {
         >
           Create Test
         </Button>
+        )}
+
         <Button
           mode="contained"
           onPress={() => navigation.navigate('TestList')}
