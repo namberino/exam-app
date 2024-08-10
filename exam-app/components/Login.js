@@ -38,7 +38,7 @@ const Login = ({ navigation }) => {
   const handleLogin = async () => {
     try {
       const response = await axios.post('http://192.168.1.203:5000/login', { name, password });
-      setUser({ name: response.data.user.name, userType: response.data.user.user_type });
+      setUser({ name: response.data.user.name, userType: response.data.user.user_type, userId: response.data.user._id });
       navigation.navigate('Home');
       setMessage("Logged in");
     } catch (err) {

@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
 import { Button, Text, Appbar } from 'react-native-paper';
 import axios from 'axios';
+import { UserContext } from './UserContext';
 
 const TestCreation = () => {
   const [questions, setQuestions] = useState([]);
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [message, setMessage] = useState('');
   const [testName, setTestName] = useState('');
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -39,7 +41,8 @@ const TestCreation = () => {
     try {
       const response = await axios.post('http://192.168.1.203:5000/tests', {
         name: testName,
-        questions: selectedQuestions.map(q => q._id)
+        questions: selectedQuestions.map(q => q._id),
+        user_id: user.userId
       });
       setMessage(response.data.message);
       setTestName('');

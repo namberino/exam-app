@@ -55,7 +55,7 @@ def login():
     
     user = users.find_one({'name': name})
     if user and bcrypt.checkpw(password, user['password']):
-        return jsonify({'message': 'Login successful', 'user': {'name': name, 'user_type': user['user_type']}})
+        return jsonify({'message': 'Login successful', 'user': {'name': name, 'user_type': user['user_type'], '_id': str(user['_id']) }})
     return jsonify({'error': 'Invalid credentials'}), 401
 
 @app.route('/questions', methods=['POST'])
@@ -95,6 +95,7 @@ def create_test():
         data = request.get_json()
         question_ids = data['questions']
         name = data.get('name', '')
+        user_id = data.get('user_id')
 
         # Convert question IDs from string to ObjectId
         formatted_question_ids = [ObjectId(q_id) for q_id in question_ids]
@@ -102,7 +103,8 @@ def create_test():
         test = {
             'questions': formatted_question_ids,
             'scores': {},
-            'name': name
+            'name': name,
+            'creator_id': ObjectId(user_id)
         }
         
         test_id = tests.insert_one(test).inserted_id
@@ -112,12 +114,24 @@ def create_test():
 
 @app.route('/tests', methods=['GET'])
 def get_tests():
-    result = list(tests.find())
-    for test in result:
-        test['_id'] = str(test['_id'])
-        test['questions'] = [str(q) for q in test['questions']]
-        test['name'] = test.get('name', '')
-    return jsonify(result)
+    user_id = request.args.get('user_id')  # Pass user ID as a query parameter
+    user_id = ObjectId(user_id)
+    user = db.users.find_one({'_id': user_id})
+
+    if user['user_type'] == 'teacher':
+        found_tests = tests.find({'creator_id': user_id})
+    else:
+        found_tests = tests.find()  # Students can view all tests
+
+    test_list = []
+    for test in found_tests:
+        test_list.append({
+            '_id': str(test['_id']),
+            'questions': [str(q_id) for q_id in test['questions']],
+            'scores': test['scores'],
+            'name': test['name']
+        })
+    return jsonify(test_list)
 
 @app.route('/tests/<test_id>', methods=['POST'])
 def submit_test(test_id):
@@ -131,12 +145,17 @@ def submit_test(test_id):
 
 @app.route('/tests/<test_id>', methods=['DELETE'])
 def delete_test(test_id):
-    test = tests.find_one({'_id': ObjectId(test_id)})
+    user_id = request.args.get('user_id')
+    test = db.tests.find_one({'_id': ObjectId(test_id)})
+
     if not test:
         return jsonify({'error': 'Test not found'}), 404
 
-    tests.delete_one({'_id': ObjectId(test_id)})
-    return jsonify({'message': 'Test deleted successfully'}), 200
+    if str(test['creator_id']) != user_id:
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    db.tests.delete_one({'_id': ObjectId(test_id)})
+    return jsonify({'message': 'Test deleted successfully'})
 
 # get test for testing
 @app.route('/tests/<test_id>', methods=['GET'])

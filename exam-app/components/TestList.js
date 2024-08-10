@@ -12,7 +12,7 @@ const TestList = ({ navigation }) => {
   useEffect(() => {
     const fetchTests = async () => {
       try {
-        const response = await axios.get('http://192.168.1.203:5000/tests');
+        const response = await axios.get(`http://192.168.1.203:5000/tests?user_id=${user.userId}`);
         setTests(response.data);
       } catch (error) {
         setMessage('Error fetching tests');
@@ -31,7 +31,7 @@ const TestList = ({ navigation }) => {
 
   const handleDelete = async (testId) => {
     try {
-      await axios.delete(`http://192.168.1.203:5000/tests/${testId}`);
+      await axios.delete(`http://192.168.1.203:5000/tests/${testId}?user_id=${user.userId}`);
       setTests(tests.filter(test => test._id !== testId));
       setMessage('Test deleted successfully');
     } catch (error) {
