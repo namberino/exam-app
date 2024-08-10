@@ -14,6 +14,21 @@ users = db.users
 questions = db.questions
 tests = db.tests
 
+def check_permission(user_id, action):
+    user = users_collection.find_one({"_id": user_id})
+    
+    if not user:
+        abort(404, "User not found")
+
+    if user['user_type'] == 'student':
+        if action in ['take_test', 'view_scores']:
+            return True
+    elif user['user_type'] == 'teacher':
+        if action in ['create_test', 'manage_tests', 'view_scores']:
+            return True
+    
+    abort(403, "You don't have permission to perform this action")
+
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -114,6 +129,7 @@ def submit_test(test_id):
     tests.update_one({'_id': ObjectId(test_id)}, {'$set': {'scores': scores}})
     return jsonify({'message': 'Test submitted successfully'})
 
+# get test for testing
 @app.route('/tests/<test_id>', methods=['GET'])
 def get_test(test_id):
     try:
