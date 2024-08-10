@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { Text, Card, Appbar, IconButton } from 'react-native-paper';
 import axios from 'axios';
 import { UserContext } from './UserContext';
@@ -29,6 +29,28 @@ const TestList = ({ navigation }) => {
     }
   };
 
+  const handleDelete = async (testId) => {
+    try {
+      await axios.delete(`http://192.168.1.203:5000/tests/${testId}`);
+      setTests(tests.filter(test => test._id !== testId));
+      setMessage('Test deleted successfully');
+    } catch (error) {
+      console.error('Error deleting test', error);
+      setMessage('Error deleting test');
+    }
+  };
+
+  const confirmDelete = (testId) => {
+    Alert.alert(
+      'Delete Test',
+      'Are you sure you want to delete this test?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: () => handleDelete(testId) }
+      ]
+    );
+  };
+
   return (
     <View style={styles.container}>
       <Appbar.Header>
@@ -42,19 +64,25 @@ const TestList = ({ navigation }) => {
         data={tests}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handlePress(item._id)}>
-            <Card style={styles.card}>
+          <Card style={styles.card}>
+            <TouchableOpacity onPress={() => handlePress(item._id)}>
               <Card.Content>
                 <Text style={styles.testTitle}>ID: {item.name}</Text>
                 <Text style={styles.testDescription}>
                   Number of questions: {item.questions.length}
                 </Text>
               </Card.Content>
+            </TouchableOpacity>
+            {user.userType === 'teacher' && (
               <Card.Actions>
-                <IconButton icon="chevron-right" size={20} />
+                <IconButton
+                  icon="delete"
+                  size={20}
+                  onPress={() => confirmDelete(item._id)}
+                />
               </Card.Actions>
-            </Card>
-          </TouchableOpacity>
+            )}
+          </Card>
         )}
       />
     </View>
@@ -82,7 +110,7 @@ const styles = StyleSheet.create({
   },
   message: {
     margin: 10,
-    color: '#DC3545',
+    color: '#28A745',
     textAlign: 'center',
   },
 });

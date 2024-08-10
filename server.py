@@ -129,6 +129,15 @@ def submit_test(test_id):
     tests.update_one({'_id': ObjectId(test_id)}, {'$set': {'scores': scores}})
     return jsonify({'message': 'Test submitted successfully'})
 
+@app.route('/tests/<test_id>', methods=['DELETE'])
+def delete_test(test_id):
+    test = tests.find_one({'_id': ObjectId(test_id)})
+    if not test:
+        return jsonify({'error': 'Test not found'}), 404
+
+    tests.delete_one({'_id': ObjectId(test_id)})
+    return jsonify({'message': 'Test deleted successfully'}), 200
+
 # get test for testing
 @app.route('/tests/<test_id>', methods=['GET'])
 def get_test(test_id):
