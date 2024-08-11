@@ -156,6 +156,7 @@ const QuestionManager = () => {
           <View style={styles.modalContainer}>
             <ScrollView style={styles.scrollView}>
               <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Edit Question</Text>
                 <TextInput
                   value={currentQuestion.content}
                   onChangeText={(text) => setCurrentQuestion({ ...currentQuestion, content: text })}
@@ -205,7 +206,7 @@ const QuestionManager = () => {
                     />
                   </View>
                 ))}
-                <Button mode="contained" onPress={handleSaveQuestion} style={styles.button}>
+                <Button mode="contained" onPress={handleSaveQuestion} style={styles.saveButton}>
                   Save
                 </Button>
               </View>
@@ -264,8 +265,14 @@ const styles = StyleSheet.create({
     width: '90%',
     backgroundColor: '#FFF',
     padding: 20,
-    borderRadius: 8,
+    borderRadius: 12,
     alignSelf: 'center',
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
   },
   input: {
     height: 50,
@@ -273,19 +280,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 15,
-    marginBottom: 20,
+    marginBottom: 15,
     backgroundColor: '#FFFFFF',
   },
   choiceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 15,
   },
   choiceInput: {
     flex: 1,
     marginRight: 10,
+    borderColor: '#CED4DA',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    backgroundColor: '#FFFFFF',
   },
-  button: {
+  saveButton: {
     marginTop: 20,
   },
 });
