@@ -24,6 +24,15 @@ const Home = ({ navigation }) => {
           Upload Question
         </Button>
         )}
+        {user.userType === 'teacher' && (
+        <Button
+          mode="contained"
+          onPress={() => navigation.navigate('QuestionManager')}
+          style={styles.button}
+        >
+          Manage Questions
+        </Button>
+        )}
 
         {user.userType === 'teacher' && (
         <Button

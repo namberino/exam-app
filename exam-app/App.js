@@ -10,6 +10,7 @@ import TestList from './components/TestList';
 import TakeTest from './components/TakeTest';
 import TestResult from './components/TestResult';
 import ViewTestAnswers from './components/ViewTestAnswers';
+import QuestionManager from './components/QuestionManager';
 
 const Stack = createStackNavigator();
 
@@ -26,6 +27,7 @@ const AppNavigator = () => {
           <Stack.Screen name="TakeTest" component={TakeTest} />
           <Stack.Screen name="TestResult" component={TestResult} />
           <Stack.Screen name="ViewTestAnswers" component={ViewTestAnswers} />
+          <Stack.Screen name="QuestionManager" component={QuestionManager} />
     </Stack.Navigator>
   );
 };

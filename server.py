@@ -218,5 +218,19 @@ def assign_students():
 
     return jsonify({'message': 'Students assigned successfully!'}), 200
 
+@app.route('/questions/<question_id>', methods=['PUT'])
+def update_question(question_id):
+    data = request.get_json()
+    question = {
+        "content": data.get("content"),
+        "chapter": data.get("chapter"),
+        "subject": data.get("subject"),
+        "difficulty": data.get("difficulty"),
+        "choices": data.get("choices"),
+        "correct_answer": data.get("correct_answer")
+    }
+    db.questions.update_one({"_id": ObjectId(question_id)}, {"$set": question})
+    return jsonify({"message": "Question updated successfully!"})
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
