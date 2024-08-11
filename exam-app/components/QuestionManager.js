@@ -154,8 +154,8 @@ const QuestionManager = () => {
           onRequestClose={() => setEditModalVisible(false)}
         >
           <View style={styles.modalContainer}>
-            <ScrollView style={styles.scrollView}>
-              <View style={styles.modalContent}>
+            <View style={styles.modalContent}>
+              <ScrollView contentContainerStyle={styles.scrollView}>
                 <Text style={styles.modalTitle}>Edit Question</Text>
                 <TextInput
                   value={currentQuestion.content}
@@ -209,8 +209,8 @@ const QuestionManager = () => {
                 <Button mode="contained" onPress={handleSaveQuestion} style={styles.saveButton}>
                   Save
                 </Button>
-              </View>
-            </ScrollView>
+              </ScrollView>
+            </View>
           </View>
         </Modal>
       )}
@@ -258,11 +258,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  scrollView: {
-    width: '100%',
-  },
   modalContent: {
     width: '90%',
+    maxHeight: '80%',
     backgroundColor: '#FFF',
     padding: 20,
     borderRadius: 12,
