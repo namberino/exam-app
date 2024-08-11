@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity, TextInput, Modal, ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { Button, Text, Appbar } from 'react-native-paper';
+import { Button, Text, Appbar, IconButton } from 'react-native-paper';
 import axios from 'axios';
 
 const QuestionManager = () => {
@@ -74,7 +74,17 @@ const QuestionManager = () => {
   const handleChoiceChange = (index, newChoice) => {
     if (currentQuestion && currentQuestion.choices) {
       const updatedChoices = [...currentQuestion.choices];
-      updatedChoices[index] = newChoice;
+      updatedChoices[index].text = newChoice;
+      setCurrentQuestion({ ...currentQuestion, choices: updatedChoices });
+    }
+  };
+
+  const handleChoiceCorrectnessChange = (index, isCorrect) => {
+    if (currentQuestion && currentQuestion.choices) {
+      const updatedChoices = currentQuestion.choices.map((choice, i) => ({
+        ...choice,
+        is_correct: i === index ? isCorrect : false
+      }));
       setCurrentQuestion({ ...currentQuestion, choices: updatedChoices });
     }
   };
@@ -171,20 +181,27 @@ const QuestionManager = () => {
                   ))}
                 </Picker>
                 {currentQuestion.choices && currentQuestion.choices.map((choice, index) => (
-                <TextInput
-                    key={index}
-                    value={choice.text} // Access the text property
-                    onChangeText={(text) => handleChoiceChange(index, text)}
-                    style={styles.input}
-                    placeholder={`Edit Choice ${index + 1}`}
-                />
+                  <View key={index} style={styles.choiceContainer}>
+                    <TextInput
+                      value={choice.text}
+                      onChangeText={(text) => handleChoiceChange(index, text)}
+                      style={styles.choiceInput}
+                      placeholder={`Edit Choice ${index + 1}`}
+                    />
+                    <IconButton
+                      icon={choice.is_correct ? 'check-circle' : 'circle'}
+                      color={choice.is_correct ? '#28A745' : '#212529'}
+                      size={24}
+                      onPress={() => handleChoiceCorrectnessChange(index, !choice.is_correct)}
+                    />
+                  </View>
                 ))}
-                <TextInput
+                {/* <TextInput
                   value={currentQuestion.correct_answer}
                   onChangeText={(text) => setCurrentQuestion({ ...currentQuestion, correct_answer: text })}
                   style={styles.input}
                   placeholder="Edit Correct Answer"
-                />
+                /> */}
                 <Button mode="contained" onPress={handleSaveQuestion} style={styles.button}>
                   Save
                 </Button>
@@ -246,6 +263,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     marginBottom: 20,
     backgroundColor: '#FFFFFF',
+  },
+  choiceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  choiceInput: {
+    flex: 1,
+    marginRight: 10,
   },
   button: {
     marginTop: 20,
