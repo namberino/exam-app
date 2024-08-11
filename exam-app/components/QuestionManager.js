@@ -89,6 +89,12 @@ const QuestionManager = () => {
     }
   };
 
+  const clearFilters = () => {
+    setSelectedChapter('');
+    setSelectedSubject('');
+    setSelectedDifficulty('');
+  };
+
   return (
     <View style={styles.container}>
       <Appbar.Header>
@@ -125,6 +131,9 @@ const QuestionManager = () => {
             <Picker.Item key={index} label={difficulty} value={difficulty} />
           ))}
         </Picker>
+        <Button mode="outlined" onPress={clearFilters} style={styles.clearButton}>
+          Clear Filters
+        </Button>
       </View>
       <FlatList
         data={filteredQuestions}
@@ -196,12 +205,6 @@ const QuestionManager = () => {
                     />
                   </View>
                 ))}
-                {/* <TextInput
-                  value={currentQuestion.correct_answer}
-                  onChangeText={(text) => setCurrentQuestion({ ...currentQuestion, correct_answer: text })}
-                  style={styles.input}
-                  placeholder="Edit Correct Answer"
-                /> */}
                 <Button mode="contained" onPress={handleSaveQuestion} style={styles.button}>
                   Save
                 </Button>
@@ -223,12 +226,20 @@ const styles = StyleSheet.create({
   filterContainer: {
     marginBottom: 20,
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
     justifyContent: 'space-between',
   },
   picker: {
     flex: 1,
     height: 50,
     color: '#495057',
+    marginHorizontal: 5,
+  },
+  clearButton: {
+    marginTop: 10,
+    marginLeft: 10,
+    flexBasis: '100%',
   },
   questionItem: {
     padding: 15,
