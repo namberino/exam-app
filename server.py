@@ -15,19 +15,21 @@ questions = db.questions
 tests = db.tests
 
 def check_permission(user_id, action):
-    user = users_collection.find_one({"_id": user_id})
+    user = users.find_one({"_id": ObjectId(user_id)})
     
     if not user:
-        abort(404, "User not found")
+        return jsonify({"error": "User not found"}), 404
 
-    if user['user_type'] == 'student':
-        if action in ['take_test', 'view_scores']:
-            return True
-    elif user['user_type'] == 'teacher':
-        if action in ['create_test', 'manage_tests', 'view_scores']:
-            return True
+    user_type_permissions = {
+        'student': ['take_test', 'view_scores'],
+        'teacher': ['create_test', 'manage_tests', 'view_scores'],
+        'admin': ['create_test', 'manage_tests', 'view_scores', 'delete_tests'],
+    }
+
+    if action in user_type_permissions.get(user['user_type'], []):
+        return True
     
-    abort(403, "You don't have permission to perform this action")
+    return jsonify({"error": "You don't have permission to perform this action"}), 403
 
 @app.route('/register', methods=['POST'])
 def register():
