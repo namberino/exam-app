@@ -15,7 +15,7 @@ const QuestionUpload = () => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    // Fetch subjects from the backend
+    // Fetch subjects from back end
     const fetchSubjects = async () => {
       try {
         const response = await axios.get('http://192.168.1.203:5000/subjects');
@@ -77,12 +77,16 @@ const QuestionUpload = () => {
         onChangeText={setContent}
         style={styles.input}
       />
-      <TextInput
-        label="Difficulty"
-        value={difficulty}
-        onChangeText={setDifficulty}
-        style={styles.input}
-      />
+      <Picker
+        selectedValue={difficulty}
+        onValueChange={(itemValue) => setDifficulty(itemValue)}
+        style={styles.picker}
+      >
+        <Picker.Item label="Select Difficulty" value="" />
+        <Picker.Item label="Easy" value="Easy" />
+        <Picker.Item label="Medium" value="Medium" />
+        <Picker.Item label="Hard" value="Hard" />
+      </Picker>
       <TextInput
         label="Chapter"
         value={chapter}
@@ -136,7 +140,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     marginBottom: 10,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F8F9FA',
     borderRadius: 8,
     height: 50,
   },
@@ -150,7 +154,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   addButton: {
-    marginVertical: 0,
+    marginVertical: 10,
   },
   submitButton: {
     marginVertical: 20,
