@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, TextInput, SectionList } from 'react-native';
+import { View, StyleSheet, SectionList, TouchableOpacity, TextInput } from 'react-native';
 import { Button, Text, Appbar, Card } from 'react-native-paper';
 import axios from 'axios';
 import { UserContext } from './UserContext';
@@ -91,18 +91,18 @@ const TestCreation = () => {
       return (
         <TouchableOpacity
           onPress={() => handleAddStudent(item)}
-          style={styles.studentItem}
+          style={styles.listItem}
         >
-          <Text style={styles.studentName}>{item.name}</Text>
+          <Text style={styles.itemText}>{item.name}</Text>
         </TouchableOpacity>
       );
     }
 
     if (section.title === 'Assigned Students') {
       return (
-        <Card key={item._id} style={styles.assignedStudentCard}>
-          <View style={styles.assignedStudentItem}>
-            <Text style={styles.studentName}>{item.name}</Text>
+        <Card key={item._id} style={styles.card}>
+          <View style={styles.cardContent}>
+            <Text style={styles.itemText}>{item.name}</Text>
             <Button onPress={() => handleRemoveStudent(item._id)} mode="contained" style={styles.removeButton}>
               Remove
             </Button>
@@ -116,11 +116,11 @@ const TestCreation = () => {
         <TouchableOpacity
           onPress={() => handleSelectQuestion(item)}
           style={[
-            styles.questionItem,
-            isSelected(item._id) && styles.selectedQuestion
+            styles.listItem,
+            isSelected(item._id) && styles.selectedItem
           ]}
         >
-          <Text style={styles.questionContent}>{item.content}</Text>
+          <Text style={styles.itemText}>{item.content}</Text>
         </TouchableOpacity>
       );
     }
@@ -147,19 +147,19 @@ const TestCreation = () => {
               onChangeText={setTestName}
               style={styles.input}
             />
-            <Text style={styles.subTitle}>Search for students:</Text>
+            <Text style={styles.sectionTitle}>Search for students:</Text>
             <TextInput
               placeholder="Search for students"
               value={studentQuery}
               onChangeText={setStudentQuery}
               style={styles.input}
             />
-            {assignedStudents.length === 0 && <Text>No students assigned yet.</Text>}
+            {assignedStudents.length === 0 && <Text style={styles.noItemsText}>No students assigned yet.</Text>}
           </View>
         )}
         renderSectionHeader={({ section }) => (
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionHeaderText}>{section.title}</Text>
+            <Text style={styles.sectionTitle}>{section.title}</Text>
           </View>
         )}
       />
@@ -175,82 +175,74 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8F9FA',
-    padding: 20,
+    padding: 16,
   },
   headerContainer: {
-    marginBottom: 20,
+    marginBottom: 16,
   },
   input: {
-    height: 50,
-    borderColor: '#CED4DA',
+    height: 40,
+    borderColor: '#F8F9FA',
     borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    marginBottom: 20,
-    backgroundColor: '#FFFFFF',
-  },
-  subTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#343A40',
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    marginBottom: 12,
+    backgroundColor: '#f0f0f0',
   },
   sectionHeader: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    backgroundColor: '#E9ECEF',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 4,
+    marginBottom: 8,
   },
-  sectionHeaderText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#495057',
-  },
-  studentItem: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#CED4DA',
-  },
-  studentName: {
+  sectionTitle: {
     fontSize: 16,
-    color: '#212529',
+    fontWeight: 'bold',
+    color: '#333',
   },
-  assignedStudentsContainer: {
-    marginVertical: 20,
+  listItem: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    backgroundColor: '#fff',
   },
-  assignedStudentCard: {
-    marginBottom: 10,
-    backgroundColor: '#FFF',
-    borderRadius: 8,
-    elevation: 2,
+  selectedItem: {
+    backgroundColor: '#e3f2fd',
   },
-  assignedStudentItem: {
+  itemText: {
+    fontSize: 14,
+    color: '#333',
+  },
+  card: {
+    marginBottom: 8,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 4,
+    elevation: 1,
+  },
+  cardContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 15,
+    padding: 12,
   },
   removeButton: {
-    backgroundColor: '#FF6B6B',
-  },
-  questionItem: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#CED4DA',
-  },
-  selectedQuestion: {
-    backgroundColor: '#E9F5E9',
-  },
-  questionContent: {
-    fontSize: 16,
-    color: '#212529',
+    backgroundColor: '#ff5252',
+    borderRadius: 4,
   },
   button: {
-    marginVertical: 20,
+    marginTop: 16,
+    backgroundColor: '#212529',
   },
   message: {
-    marginTop: 10,
-    color: '#28D46A',
+    marginTop: 16,
+    color: '#ff5252',
     textAlign: 'center',
+  },
+  noItemsText: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    color: '#999',
   },
 });
 
