@@ -13,6 +13,7 @@ db = client.exam_app
 users = db.users
 questions = db.questions
 tests = db.tests
+subjects = db.subjects
 
 def check_permission(user_id, action):
     user = users.find_one({"_id": ObjectId(user_id)})
@@ -65,6 +66,7 @@ def create_question():
     data = request.get_json()
     choices = data.get('choices', [])
     correct_answer = data.get('correct_answer', '')
+    subject_id = data.get('subject_id')
 
     # Ensure choices is a list of dicts with text and is_correct
     formatted_choices = [
@@ -76,7 +78,7 @@ def create_question():
         'content': data['content'],
         'difficulty': data.get('difficulty', ''),
         'chapter': data.get('chapter', ''),
-        'subject': data.get('subject', ''),
+        'subject_id': ObjectId(subject_id),
         'choices': formatted_choices,
         'correct_answer': correct_answer
     }
@@ -89,6 +91,9 @@ def get_questions():
     result = list(questions.find())
     for question in result:
         question['_id'] = str(question['_id'])
+        subject = subjects.find_one({"_id": ObjectId(question['subject_id'])})
+        question['subject_id'] = str(question['subject_id'])
+        question['subject'] = subject['name'] if subject else None
     return jsonify(result)
 
 @app.route('/tests', methods=['POST'])
@@ -226,13 +231,19 @@ def update_question(question_id):
     question = {
         "content": data.get("content"),
         "chapter": data.get("chapter"),
-        "subject": data.get("subject"),
+        "subject_id": ObjectId(data.get("subject_id")),
         "difficulty": data.get("difficulty"),
         "choices": data.get("choices"),
         "correct_answer": data.get("correct_answer")
     }
     db.questions.update_one({"_id": ObjectId(question_id)}, {"$set": question})
     return jsonify({"message": "Question updated successfully!"})
+
+@app.route('/subjects', methods=['GET'])
+def get_subjects():
+    subjects = db.subjects.find()
+    subject_list = [{"_id": str(subject["_id"]), "name": subject["name"]} for subject in subjects]
+    return jsonify(subject_list)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { TextInput, Button, Text, IconButton } from 'react-native-paper';
+import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 
 const QuestionUpload = () => {
@@ -8,9 +9,23 @@ const QuestionUpload = () => {
   const [difficulty, setDifficulty] = useState('');
   const [chapter, setChapter] = useState('');
   const [subject, setSubject] = useState('');
+  const [subjects, setSubjects] = useState([]);
   const [choices, setChoices] = useState([{ text: '', is_correct: false }]);
   const [correctAnswer, setCorrectAnswer] = useState('');
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    // Fetch subjects from the backend
+    const fetchSubjects = async () => {
+      try {
+        const response = await axios.get('http://192.168.1.203:5000/subjects');
+        setSubjects(response.data);
+      } catch (error) {
+        console.error('Error fetching subjects', error);
+      }
+    };
+    fetchSubjects();
+  }, []);
 
   const handleChoiceChange = (index, text) => {
     const newChoices = [...choices];
@@ -37,7 +52,7 @@ const QuestionUpload = () => {
         content,
         difficulty,
         chapter,
-        subject,
+        subject_id: subject, // Use the selected subject ID
         choices,
         correct_answer: correctAnswer
       });
@@ -74,12 +89,16 @@ const QuestionUpload = () => {
         onChangeText={setChapter}
         style={styles.input}
       />
-      <TextInput
-        label="Subject"
-        value={subject}
-        onChangeText={setSubject}
-        style={styles.input}
-      />
+      <Picker
+        selectedValue={subject}
+        onValueChange={(itemValue) => setSubject(itemValue)}
+        style={styles.picker}
+      >
+        <Picker.Item label="Select Subject" value="" />
+        {subjects.map((subject) => (
+          <Picker.Item key={subject._id} label={subject.name} value={subject._id} />
+        ))}
+      </Picker>
       {choices.map((choice, index) => (
         <View key={index} style={styles.choiceContainer}>
           <TextInput
@@ -108,33 +127,39 @@ const QuestionUpload = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-      padding: 20,
-      backgroundColor: '#F8F9FA',
-    },
-    input: {
-      marginBottom: 10,
-    },
-    choiceContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 10,
-    },
-    choiceInput: {
-      flex: 1,
-      marginRight: 10,
-    },
-    addButton: {
-      marginVertical: 0,
-    },
-    submitButton: {
-      marginVertical: 20,
-    },
-    message: {
-      marginTop: 10,
-      color: '#28D46A',
-      textAlign: 'center',
-    },
+  container: {
+    padding: 20,
+    backgroundColor: '#F8F9FA',
+  },
+  input: {
+    marginBottom: 10,
+  },
+  picker: {
+    marginBottom: 10,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    height: 50,
+  },
+  choiceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  choiceInput: {
+    flex: 1,
+    marginRight: 10,
+  },
+  addButton: {
+    marginVertical: 0,
+  },
+  submitButton: {
+    marginVertical: 20,
+  },
+  message: {
+    marginTop: 10,
+    color: '#28D46A',
+    textAlign: 'center',
+  },
 });
 
 export default QuestionUpload;

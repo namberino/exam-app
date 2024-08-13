@@ -25,11 +25,12 @@ const QuestionManager = () => {
         setFilteredQuestions(questionsData);
 
         const uniqueChapters = [...new Set(questionsData.map(q => q.chapter))];
-        const uniqueSubjects = [...new Set(questionsData.map(q => q.subject))];
-        const uniqueDifficulties = [...new Set(questionsData.map(q => q.difficulty))];
-
         setChapters(uniqueChapters);
-        setSubjects(uniqueSubjects);
+
+        const subjectsResponse = await axios.get('http://192.168.1.203:5000/subjects');
+        setSubjects(subjectsResponse.data);
+
+        const uniqueDifficulties = [...new Set(questionsData.map(q => q.difficulty))];
         setDifficulties(uniqueDifficulties);
       } catch (error) {
         console.error('Error fetching questions', error);
@@ -44,7 +45,7 @@ const QuestionManager = () => {
       filtered = filtered.filter(q => q.chapter === selectedChapter);
     }
     if (selectedSubject) {
-      filtered = filtered.filter(q => q.subject === selectedSubject);
+      filtered = filtered.filter(q => q.subject_id === selectedSubject);
     }
     if (selectedDifficulty) {
       filtered = filtered.filter(q => q.difficulty === selectedDifficulty);
@@ -100,15 +101,15 @@ const QuestionManager = () => {
       <Appbar.Header>
         <Appbar.Content title="Question Manager" />
       </Appbar.Header>
-      <View style={styles.filterContainer}>
+      <View style={styles.filtersContainer}>
         <Picker
           selectedValue={selectedChapter}
           onValueChange={(itemValue) => setSelectedChapter(itemValue)}
           style={styles.picker}
         >
           <Picker.Item label="Select Chapter" value="" />
-          {chapters.map((chapter, index) => (
-            <Picker.Item key={index} label={chapter} value={chapter} />
+          {chapters.map((chapter) => (
+            <Picker.Item key={chapter} label={chapter} value={chapter} />
           ))}
         </Picker>
         <Picker
@@ -117,8 +118,8 @@ const QuestionManager = () => {
           style={styles.picker}
         >
           <Picker.Item label="Select Subject" value="" />
-          {subjects.map((subject, index) => (
-            <Picker.Item key={index} label={subject} value={subject} />
+          {subjects.map((subject) => (
+            <Picker.Item key={subject._id} label={subject.name} value={subject._id} />
           ))}
         </Picker>
         <Picker
@@ -127,93 +128,80 @@ const QuestionManager = () => {
           style={styles.picker}
         >
           <Picker.Item label="Select Difficulty" value="" />
-          {difficulties.map((difficulty, index) => (
-            <Picker.Item key={index} label={difficulty} value={difficulty} />
+          {difficulties.map((difficulty) => (
+            <Picker.Item key={difficulty} label={difficulty} value={difficulty} />
           ))}
         </Picker>
-        <Button mode="outlined" onPress={clearFilters} style={styles.clearButton}>
+        <Button mode="outlined" onPress={clearFilters}>
           Clear Filters
         </Button>
       </View>
       <FlatList
         data={filteredQuestions}
-        keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => openEditModal(item)}
-            style={styles.questionItem}
-          >
-            <Text style={styles.questionContent}>{item.content}</Text>
+          <TouchableOpacity style={styles.questionContainer} onPress={() => openEditModal(item)}>
+            <Text>{item.content}</Text>
           </TouchableOpacity>
         )}
+        keyExtractor={(item) => item._id}
       />
-      {editModalVisible && currentQuestion && (
-        <Modal
-          transparent={true}
-          visible={editModalVisible}
-          onRequestClose={() => setEditModalVisible(false)}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <ScrollView contentContainerStyle={styles.scrollView}>
-                <Text style={styles.modalTitle}>Edit Question</Text>
-                <TextInput
-                  value={currentQuestion.content}
-                  onChangeText={(text) => setCurrentQuestion({ ...currentQuestion, content: text })}
-                  style={styles.input}
-                  placeholder="Edit Question Content"
-                />
-                <Picker
-                  selectedValue={currentQuestion.chapter}
-                  onValueChange={(itemValue) => setCurrentQuestion({ ...currentQuestion, chapter: itemValue })}
-                  style={styles.picker}
-                >
-                  {chapters.map((chapter, index) => (
-                    <Picker.Item key={index} label={chapter} value={chapter} />
-                  ))}
-                </Picker>
-                <Picker
-                  selectedValue={currentQuestion.subject}
-                  onValueChange={(itemValue) => setCurrentQuestion({ ...currentQuestion, subject: itemValue })}
-                  style={styles.picker}
-                >
-                  {subjects.map((subject, index) => (
-                    <Picker.Item key={index} label={subject} value={subject} />
-                  ))}
-                </Picker>
-                <Picker
-                  selectedValue={currentQuestion.difficulty}
-                  onValueChange={(itemValue) => setCurrentQuestion({ ...currentQuestion, difficulty: itemValue })}
-                  style={styles.picker}
-                >
-                  {difficulties.map((difficulty, index) => (
-                    <Picker.Item key={index} label={difficulty} value={difficulty} />
-                  ))}
-                </Picker>
-                {currentQuestion.choices && currentQuestion.choices.map((choice, index) => (
-                  <View key={index} style={styles.choiceContainer}>
-                    <TextInput
-                      value={choice.text}
-                      onChangeText={(text) => handleChoiceChange(index, text)}
-                      style={styles.choiceInput}
-                      placeholder={`Edit Choice ${index + 1}`}
-                    />
-                    <IconButton
-                      icon={choice.is_correct ? 'check-circle' : 'circle'}
-                      color={choice.is_correct ? '#28A745' : '#212529'}
-                      size={24}
-                      onPress={() => handleChoiceCorrectnessChange(index, !choice.is_correct)}
-                    />
-                  </View>
+      <Modal visible={editModalVisible} onRequestClose={() => setEditModalVisible(false)}>
+        <ScrollView style={styles.modalContainer}>
+          {currentQuestion && (
+            <>
+              <TextInput
+                label="Question Content"
+                value={currentQuestion.content}
+                onChangeText={(text) => setCurrentQuestion({ ...currentQuestion, content: text })}
+                style={styles.input}
+              />
+              <TextInput
+                label="Difficulty"
+                value={currentQuestion.difficulty}
+                onChangeText={(text) => setCurrentQuestion({ ...currentQuestion, difficulty: text })}
+                style={styles.input}
+              />
+              <TextInput
+                label="Chapter"
+                value={currentQuestion.chapter}
+                onChangeText={(text) => setCurrentQuestion({ ...currentQuestion, chapter: text })}
+                style={styles.input}
+              />
+              <Picker
+                selectedValue={currentQuestion.subject_id}
+                onValueChange={(itemValue) =>
+                  setCurrentQuestion({ ...currentQuestion, subject_id: itemValue })
+                }
+                style={styles.picker}
+              >
+                <Picker.Item label="Select Subject" value="" />
+                {subjects.map((subject) => (
+                  <Picker.Item key={subject._id} label={subject.name} value={subject._id} />
                 ))}
-                <Button mode="contained" onPress={handleSaveQuestion} style={styles.saveButton}>
-                  Save
-                </Button>
-              </ScrollView>
-            </View>
-          </View>
-        </Modal>
-      )}
+              </Picker>
+              {currentQuestion.choices.map((choice, index) => (
+                <View key={index} style={styles.choiceContainer}>
+                  <TextInput
+                    label={`Choice ${index + 1}`}
+                    value={choice.text}
+                    onChangeText={(text) => handleChoiceChange(index, text)}
+                    style={styles.choiceInput}
+                  />
+                  <IconButton
+                    icon={choice.is_correct ? 'check-circle' : 'circle'}
+                    color={choice.is_correct ? '#28A745' : '#212529'}
+                    size={24}
+                    onPress={() => handleChoiceCorrectnessChange(index, !choice.is_correct)}
+                  />
+                </View>
+              ))}
+              <Button mode="contained" onPress={handleSaveQuestion} style={styles.saveButton}>
+                Save Question
+              </Button>
+            </>
+          )}
+        </ScrollView>
+      </Modal>
     </View>
   );
 };
@@ -222,78 +210,40 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8F9FA',
-    padding: 20,
   },
-  filterContainer: {
-    marginBottom: 20,
-    flexDirection: 'column',
-    alignItems: 'flex-start',
+  filtersContainer: {
+    flexDirection: 'row',
+    padding: 10,
   },
   picker: {
-    width: '100%',
-    height: 50,
-    color: '#495057',
-    borderColor: '#CED4DA',
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 10,
+    flex: 1,
+    marginHorizontal: 5,
     backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    height: 50,
   },
-  clearButton: {
-    marginTop: 10,
-    alignSelf: 'flex-end',
-  },
-  questionItem: {
-    padding: 15,
+  questionContainer: {
+    padding: 10,
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: '#CED4DA',
-  },
-  questionContent: {
-    fontSize: 16,
-    color: '#212529',
+    borderBottomColor: '#E9ECEF',
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    width: '90%',
-    maxHeight: '80%',
-    backgroundColor: '#FFF',
     padding: 20,
-    borderRadius: 12,
-    alignSelf: 'center',
-    elevation: 5,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 15,
+    backgroundColor: '#F8F9FA',
   },
   input: {
-    height: 50,
-    borderColor: '#CED4DA',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    marginBottom: 15,
-    backgroundColor: '#FFFFFF',
+    marginBottom: 10,
   },
   choiceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 10,
   },
   choiceInput: {
     flex: 1,
     marginRight: 10,
-    borderColor: '#CED4DA',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    backgroundColor: '#FFFFFF',
   },
   saveButton: {
     marginTop: 20,
