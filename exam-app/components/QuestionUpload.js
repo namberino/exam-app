@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { TextInput, Button, Text, IconButton } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
+import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 
 const QuestionUpload = () => {
@@ -69,6 +70,37 @@ const QuestionUpload = () => {
     }
   };
 
+  const handleCSVUpload = async () => {
+    try {
+      // Pick the CSV file
+      const result = await DocumentPicker.getDocumentAsync({
+        type: 'text/csv',
+      });
+
+      if (result.type === 'success') {
+        const fileUri = result.uri;
+        const formData = new FormData();
+        formData.append('file', {
+          uri: fileUri,
+          name: result.name,
+          type: 'text/csv',
+        });
+
+        // Upload the file
+        const response = await axios.post('http://192.168.1.203:5000/upload_csv', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        setMessage('CSV uploaded successfully!');
+      }
+    } catch (error) {
+      console.error('Error uploading CSV', error);
+      setMessage('Error uploading CSV');
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       <TextInput
@@ -125,6 +157,9 @@ const QuestionUpload = () => {
       <Button mode="contained" onPress={handleSubmit} style={styles.submitButton}>
         Submit Question
       </Button>
+      <Button mode="contained" onPress={handleCSVUpload} style={styles.csvButton}>
+        Upload
+      </Button>
       {message ? <Text style={styles.message}>{message}</Text> : null}
     </ScrollView>
   );
@@ -158,6 +193,9 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     marginVertical: 20,
+  },
+  csvButton: {
+    marginVertical: 10,
   },
   message: {
     marginTop: 10,

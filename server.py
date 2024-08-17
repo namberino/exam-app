@@ -245,5 +245,31 @@ def get_subjects():
     subject_list = [{"_id": str(subject["_id"]), "name": subject["name"]} for subject in subjects]
     return jsonify(subject_list)
 
+@app.route('/upload_csv', methods=['POST'])
+def upload_csv():
+    data = request.get_json()
+    questions = data.get('questions', [])
+    formatted_questions = []
+
+    for question in questions:
+        subject_id = question.get('subject_id')
+        choices = [
+            {'text': question[f'choice_{i}'], 'is_correct': question[f'choice_{i}'] == question['correct_answer']}
+            for i in range(1, 5)  # Assuming you have 4 choices
+        ]
+        formatted_questions.append({
+            'content': question['content'],
+            'difficulty': question['difficulty'],
+            'chapter': question['chapter'],
+            'subject_id': ObjectId(subject_id),
+            'choices': choices,
+            'correct_answer': question['correct_answer']
+        })
+
+    if formatted_questions:
+        questions_collection.insert_many(formatted_questions)
+
+    return jsonify({'message': 'CSV data uploaded successfully!'}), 201
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
