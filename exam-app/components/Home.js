@@ -15,6 +15,16 @@ const Home = ({ navigation }) => {
         <Text style={styles.welcomeText}>Welcome, {user.name}!</Text>
         <Text style={styles.userType}>User Type: {user.userType}</Text>
 
+        {user.userType === 'admin' && (
+        <Button
+            mode="contained"
+            onPress={() => navigation.navigate('AdminDashboard')}
+            style={styles.button}
+        >
+            Admin Dashboard
+        </Button>
+        )}
+
         {user.userType === 'teacher' && (
         <Button
           mode="contained"
@@ -44,6 +54,7 @@ const Home = ({ navigation }) => {
         </Button>
         )}
 
+        {user.userType === 'student' && (
         <Button
           mode="contained"
           onPress={() => navigation.navigate('TestList')}
@@ -51,6 +62,7 @@ const Home = ({ navigation }) => {
         >
           View Tests
         </Button>
+        )}
       </View>
     </View>
   );

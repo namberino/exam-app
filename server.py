@@ -58,6 +58,8 @@ def login():
     
     user = users.find_one({'name': name})
     if user and bcrypt.checkpw(password, user['password']):
+        if user.get('suspended'):
+            return jsonify({'error': 'Your account is suspended'}), 403
         return jsonify({'message': 'Login successful', 'user': {'name': name, 'user_type': user['user_type'], '_id': str(user['_id']) }})
     return jsonify({'error': 'Invalid credentials'}), 401
 
@@ -270,6 +272,20 @@ def upload_csv():
         questions_collection.insert_many(formatted_questions)
 
     return jsonify({'message': 'CSV data uploaded successfully!'}), 201
+
+@app.route('/users', methods=['GET'])
+def get_users():
+    users_list = list(users.find({}, {'password': 0}))  # Exclude passwords from the response
+    for user in users_list:
+        user['_id'] = str(user['_id'])
+    return jsonify(users_list)
+
+@app.route('/users/<user_id>/suspend', methods=['PUT'])
+def suspend_user(user_id):
+    result = users.update_one({'_id': ObjectId(user_id)}, {'$set': {'suspended': True}})
+    if result.matched_count:
+        return jsonify({'message': 'User suspended successfully'}), 200
+    return jsonify({'error': 'User not found'}), 404
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

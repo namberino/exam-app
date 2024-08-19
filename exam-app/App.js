@@ -11,6 +11,7 @@ import TakeTest from './components/TakeTest';
 import TestResult from './components/TestResult';
 import ViewTestAnswers from './components/ViewTestAnswers';
 import QuestionManager from './components/QuestionManager';
+import AdminDashboard from './components/AdminDashboard';
 
 const Stack = createStackNavigator();
 
@@ -28,6 +29,7 @@ const AppNavigator = () => {
           <Stack.Screen name="TestResult" component={TestResult} />
           <Stack.Screen name="ViewTestAnswers" component={ViewTestAnswers} />
           <Stack.Screen name="QuestionManager" component={QuestionManager} />
+          <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
     </Stack.Navigator>
   );
 };
