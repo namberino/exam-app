@@ -58,7 +58,7 @@ def login():
     
     user = users.find_one({'name': name})
     if user and bcrypt.checkpw(password, user['password']):
-        if user.get('suspended'):
+        if user.get('suspended') == 1:
             return jsonify({'error': 'Your account is suspended'}), 403
         return jsonify({'message': 'Login successful', 'user': {'name': name, 'user_type': user['user_type'], '_id': str(user['_id']) }})
     return jsonify({'error': 'Invalid credentials'}), 401
@@ -275,17 +275,31 @@ def upload_csv():
 
 @app.route('/users', methods=['GET'])
 def get_users():
-    users_list = list(users.find({}, {'password': 0}))  # Exclude passwords from the response
-    for user in users_list:
-        user['_id'] = str(user['_id'])
-    return jsonify(users_list)
+    result = list(users.find())
+    user_list = []
+    for user in result:
+        user_list.append({
+            '_id': str(user['_id']),
+            'name': user['name'],
+            'user_type': user['user_type'],
+            'suspended': user.get('suspended', False)
+        })
+    return jsonify(user_list)
+
 
 @app.route('/users/<user_id>/suspend', methods=['PUT'])
 def suspend_user(user_id):
-    result = users.update_one({'_id': ObjectId(user_id)}, {'$set': {'suspended': True}})
+    result = users.update_one({'_id': ObjectId(user_id)}, {'$set': {'suspended': 1}})
     if result.matched_count:
         return jsonify({'message': 'User suspended successfully'}), 200
     return jsonify({'error': 'User not found'}), 404
+
+@app.route('/users/<user_id>/unsuspend', methods=['PUT'])
+def unsuspend_user(user_id):
+    result = users.update_one({"_id": ObjectId(user_id)}, {"$set": {"suspended": 0}})
+    if result.matched_count:
+        return jsonify({'message': 'User unsuspended successfully'}), 200
+    return jsonify({"error": "User not found"}), 404
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, Alert } from 'react-native';
-import { Button, Text, Appbar, List } from 'react-native-paper';
+import { Button, Text, Appbar } from 'react-native-paper';
 import axios from 'axios';
 
 const AdminDashboard = () => {
@@ -30,20 +30,43 @@ const AdminDashboard = () => {
     }
   };
 
-  const renderItem = ({ item }) => (
-    <List.Item
-      title={item.name}
-      description={`User Type: ${item.user_type}`}
-      right={() => (
-        <Button
-          mode="contained"
-          onPress={() => suspendUser(item._id)}
-          style={styles.suspendButton}
+  const unsuspendUser = async (userId) => {
+    try {
+      await axios.put(`http://192.168.1.203:5000/users/${userId}/unsuspend`);
+      Alert.alert('Success', 'User account unsuspended');
+      fetchUsers();  // Refresh the list after suspending the user
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'Failed to unsuspend user account');
+    }
+  };
+
+  const renderUser = ({ item }) => (
+    <View style={styles.userContainer}>
+      <Text style={styles.userName}>{item.name}</Text>
+      <Text style={styles.userType}>Type: {item.user_type}</Text>
+      <View style={styles.statusContainer}>
+        <Text style={styles.userStatusLabel}>Status:</Text>
+        <Text
+          style={[
+            styles.userStatus,
+            { color: item.suspended ? 'red' : 'green' },
+          ]}
         >
+          {item.suspended ? 'Suspended' : 'Active'}
+        </Text>
+      </View>
+
+      {item.suspended ? (
+        <Button mode="contained" onPress={() => unsuspendUser(item._id)} style={styles.button}>
+          Unsuspend
+        </Button>
+      ) : (
+        <Button mode="contained" onPress={() => suspendUser(item._id)} style={styles.button}>
           Suspend
         </Button>
       )}
-    />
+    </View>
   );
 
   return (
@@ -53,24 +76,50 @@ const AdminDashboard = () => {
       </Appbar.Header>
       <FlatList
         data={users}
-        renderItem={renderItem}
+        renderItem={renderUser}
         keyExtractor={(item) => item._id}
-        style={styles.list}
+        contentContainerStyle={styles.content}
       />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  list: {
-    padding: 20,
-  },
-  suspendButton: {
-    marginLeft: 10,
-  },
+    container: {
+      flex: 1,
+    },
+    content: {
+      padding: 20,
+    },
+    userContainer: {
+      marginBottom: 20,
+      padding: 20,
+      borderColor: '#ccc',
+      borderWidth: 1,
+      borderRadius: 8,
+    },
+    userName: {
+      fontSize: 20,
+      fontWeight: 'bold',
+    },
+    userType: {
+      fontSize: 16,
+    },
+    statusContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 10,
+    },
+    userStatusLabel: {
+      fontSize: 16,
+      marginRight: 5,
+    },
+    userStatus: {
+      fontSize: 16,
+    },
+    button: {
+      marginTop: 10,
+    },
 });
 
 export default AdminDashboard;
