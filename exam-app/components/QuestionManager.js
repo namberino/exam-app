@@ -3,6 +3,7 @@ import { View, StyleSheet, FlatList, TouchableOpacity, TextInput, Modal, ScrollV
 import { Picker } from '@react-native-picker/picker';
 import { Button, Text, Appbar, IconButton } from 'react-native-paper';
 import axios from 'axios';
+import Constants from 'expo-constants';
 
 const QuestionManager = () => {
   const [questions, setQuestions] = useState([]);
@@ -15,28 +16,52 @@ const QuestionManager = () => {
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(null);
+  const [baseURL, setBaseURL] = useState('');
 
   useEffect(() => {
-    const fetchQuestions = async () => {
-      try {
-        const response = await axios.get('http://192.168.1.203:5000/questions');
-        const questionsData = response.data;
-        setQuestions(questionsData);
-        setFilteredQuestions(questionsData);
+    const fetchExpoURL = () => {
+      let apiURL = '';
 
-        const uniqueChapters = [...new Set(questionsData.map(q => q.chapter))];
-        const uniqueSubjects = [...new Set(questionsData.map(q => q.subject))];
-        const uniqueDifficulties = ['Easy', 'Medium', 'Hard'];
-
-        setChapters(uniqueChapters);
-        setSubjects(uniqueSubjects);
-        setDifficulties(uniqueDifficulties);
-      } catch (error) {
-        console.error('Error fetching questions', error);
+      if (Constants.manifest && Constants.manifest.debuggerHost) {
+        const expoURL = Constants.manifest.debuggerHost.split(':')[0];
+        apiURL = `http://${expoURL}:5000`;
+      } else if (Constants.manifest2?.extra?.expoGo?.debuggerHost) {
+        const expoURL = Constants.manifest2.extra.expoGo.debuggerHost.split(':')[0];
+        apiURL = `http://${expoURL}:5000`;
+      } else {
+        apiURL = 'http://localhost:5000'; // Fallback or production URL
       }
+
+      setBaseURL(apiURL);
     };
-    fetchQuestions();
+
+    fetchExpoURL();
   }, []);
+
+  useEffect(() => {
+    if (baseURL)
+    {
+        const fetchQuestions = async () => {
+            try {
+                const response = await axios.get(`${baseURL}/questions`);
+                const questionsData = response.data;
+                setQuestions(questionsData);
+                setFilteredQuestions(questionsData);
+
+                const uniqueChapters = [...new Set(questionsData.map(q => q.chapter))];
+                const uniqueSubjects = [...new Set(questionsData.map(q => q.subject))];
+                const uniqueDifficulties = ['Easy', 'Medium', 'Hard'];
+
+                setChapters(uniqueChapters);
+                setSubjects(uniqueSubjects);
+                setDifficulties(uniqueDifficulties);
+            } catch (error) {
+                console.error('Error fetching questions', error);
+            }
+        };
+        fetchQuestions();
+    }
+  }, [baseURL]);
 
   const filterQuestions = () => {
     let filtered = questions;
@@ -63,7 +88,7 @@ const QuestionManager = () => {
 
   const handleSaveQuestion = async () => {
     try {
-      await axios.put(`http://192.168.1.203:5000/questions/${currentQuestion._id}`, currentQuestion);
+      await axios.put(`${baseURL}/questions/${currentQuestion._id}`, currentQuestion);
       setEditModalVisible(false);
       filterQuestions();
     } catch (error) {
