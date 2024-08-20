@@ -3,6 +3,10 @@ import { View, StyleSheet } from 'react-native';
 import { Button, Text, Appbar } from 'react-native-paper';
 import { UserContext } from './UserContext';
 
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 const Home = ({ navigation }) => {
   const { user, setUser } = useContext(UserContext);
 
@@ -13,7 +17,7 @@ const Home = ({ navigation }) => {
       </Appbar.Header>
       <View style={styles.content}>
         <Text style={styles.welcomeText}>Welcome, {user.name}!</Text>
-        <Text style={styles.userType}>User Type: {user.userType}</Text>
+        <Text style={styles.userType}>User type: {capitalizeFirstLetter(user.userType)}</Text>
 
         {user.userType === 'admin' && (
         <Button
@@ -61,6 +65,16 @@ const Home = ({ navigation }) => {
           style={styles.button}
         >
           View Tests
+        </Button>
+        )}
+
+        {user.userType === 'student' && (
+        <Button
+            mode="contained"
+            onPress={() => navigation.navigate('TestHistory')}
+            style={styles.button}
+        >
+            Test History
         </Button>
         )}
       </View>

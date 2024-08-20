@@ -14,6 +14,7 @@ users = db.users
 questions = db.questions
 tests = db.tests
 subjects = db.subjects
+test_history = db.test_history
 
 def check_permission(user_id, action):
     user = users.find_one({"_id": ObjectId(user_id)})
@@ -192,6 +193,7 @@ def get_test(test_id):
 @app.route('/tests/<test_id>/submit', methods=['POST'])
 def submit_test_answer(test_id):
     data = request.get_json()
+    user_id = ObjectId(data['user_id'])
     answers = data['answers']  # answers should be a dictionary of {question_id: answer}
     
     test = tests.find_one({'_id': ObjectId(test_id)})
@@ -203,6 +205,13 @@ def submit_test_answer(test_id):
 
     correct_answers = {str(q['_id']): q['correct_answer'] for q in questions}
     score = sum(1 for qid, ans in answers.items() if correct_answers.get(qid) == ans)
+
+    # Record the test submission in the test history
+    test_history.insert_one({
+        'user_id': user_id,
+        'test_id': ObjectId(test_id),
+        'score': score
+    })
 
     return jsonify({'score': score})
 
@@ -300,6 +309,21 @@ def unsuspend_user(user_id):
     if result.matched_count:
         return jsonify({'message': 'User unsuspended successfully'}), 200
     return jsonify({"error": "User not found"}), 404
+
+@app.route('/test_history/<user_id>', methods=['GET'])
+def view_test_history(user_id):
+    history = test_history.find({'user_id': ObjectId(user_id)})
+    history_list = []
+
+    for record in history:
+        test = tests.find_one({'_id': record['test_id']})
+        history_list.append({
+            'test_id': str(record['test_id']),
+            'test_name': test['name'] if test else None,
+            'score': record['score']
+        })
+
+    return jsonify(history_list)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

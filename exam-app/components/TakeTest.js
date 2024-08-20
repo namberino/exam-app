@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, StyleSheet, FlatList, ScrollView, TouchableOpacity } from 'react-native';
 import { Text, Button, IconButton, Appbar } from 'react-native-paper';
 import axios from 'axios';
+import { UserContext } from './UserContext';
 
 const TakeTest = ({ route, navigation }) => {
   const { testId } = route.params;
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [message, setMessage] = useState('');
+  const { user, setUser } = useContext(UserContext);
+  let user_id = user.userId;
 
   useEffect(() => {
     const fetchTest = async () => {
@@ -41,7 +44,7 @@ const TakeTest = ({ route, navigation }) => {
     }
 
     try {
-      const response = await axios.post(`http://192.168.1.203:5000/tests/${testId}/submit`, { answers });
+      const response = await axios.post(`http://192.168.1.203:5000/tests/${testId}/submit`, { answers, user_id });
       const { score } = response.data;
       navigation.navigate('TestResult', { score });
     } catch (error) {
