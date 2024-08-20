@@ -1,11 +1,11 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Appbar, Button } from 'react-native-paper';
 import { UserContext } from './UserContext';
 
 const TestResult = ({ route, navigation }) => {
-  const { score } = route.params;
-  const {user, setUser} = useContext(UserContext);
+  const { score, correctAnswers, totalQuestions } = route.params;
+  const { user } = useContext(UserContext);
 
   return (
     <View style={styles.container}>
@@ -15,6 +15,9 @@ const TestResult = ({ route, navigation }) => {
       <View style={styles.resultContainer}>
         <Text style={styles.resultText}>Your Score:</Text>
         <Text style={styles.score}>{score}</Text>
+        <Text style={styles.correctAnswersText}>
+          You got {correctAnswers} out of {totalQuestions} questions correct
+        </Text>
         <Button mode="contained" onPress={() => navigation.navigate('TestList')} style={styles.button}>
           Back to Test List
         </Button>
@@ -24,29 +27,34 @@ const TestResult = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#F8F9FA',
-    },
-    resultContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    resultText: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: '#212529',
-    },
-    score: {
-      fontSize: 48,
-      fontWeight: 'bold',
-      color: '#28A745',
-      marginVertical: 20,
-    },
-    button: {
-      marginTop: 20,
-    },
+  container: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+  },
+  resultContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  resultText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#212529',
+  },
+  score: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#28A745',
+    marginVertical: 20,
+  },
+  correctAnswersText: {
+    fontSize: 18,
+    color: '#212529',
+    marginVertical: 10,
+  },
+  button: {
+    marginTop: 20,
+  },
 });
 
 export default TestResult;
