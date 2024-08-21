@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Alert, TouchableOpacity } from 'react-native';
 import axios from 'axios';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import { Appbar, Card } from 'react-native-paper';
 
-const ViewTestScores = ({ route }) => {
+const ViewTestScores = ({ route, navigation }) => {
   const { testId } = route.params;
   const [scores, setScores] = useState([]);
   const [message, setMessage] = useState('');
@@ -29,22 +32,57 @@ const ViewTestScores = ({ route }) => {
     fetchScores();
   }, []);
 
+  const exportToCSV = async () => {
+    if (scores.length === 0) {
+      Alert.alert('No data', 'There are no scores to export.');
+      return;
+    }
+
+    const csvContent = [
+      ['Student ID', 'Student Name', 'Score'],
+      ...scores.map(({ studentId, studentName, score }) => [studentId, studentName, score]),
+    ]
+      .map(e => e.join(','))
+      .join('\n');
+
+    const fileName = `${FileSystem.documentDirectory}test_scores.csv`;
+
+    try {
+      await FileSystem.writeAsStringAsync(fileName, csvContent);
+      await Sharing.shareAsync(fileName);
+    } catch (error) {
+      Alert.alert('Error', 'An error occurred while exporting the file.');
+    }
+  };
+
   return (
     <View style={styles.container}>
+      <Appbar.Header>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content title="Test Scores" />
+        <Appbar.Action icon="download" onPress={exportToCSV} />
+      </Appbar.Header>
+
       {message ? <Text style={styles.message}>{message}</Text> : null}
+      
       <FlatList
         data={scores}
         keyExtractor={(item) => item.studentId}
         renderItem={({ item }) => (
-          <View style={styles.scoreItem}>
-            <Text style={styles.studentName}>{item.studentName}</Text>
-            <Text style={[styles.score, item.score === 'No score' && styles.noScore]}>
-              {item.score}
-            </Text>
-          </View>
+          <Card style={styles.card}>
+            <Card.Title titleStyle={styles.studentName} title={item.studentName} />
+            <Card.Content>
+              <Text style={styles.scoreLabel}>
+                Score: <Text style={styles.scoreValue}>{item.score}</Text>
+              </Text>
+            </Card.Content>
+          </Card>
         )}
-        ListEmptyComponent={<Text style={styles.emptyMessage}>No students have been assigned to this test yet.</Text>}
       />
+
+      {/* <TouchableOpacity onPress={exportToCSV} style={styles.exportButton}>
+        <Text style={styles.exportButtonText}>Export to CSV</Text>
+      </TouchableOpacity> */}
     </View>
   );
 };
@@ -53,45 +91,45 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    padding: 20,
-  },
-  scoreItem: {
-    padding: 15,
-    marginVertical: 8,
-    backgroundColor: '#F1F3F5',
-    borderRadius: 8,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
   },
   studentName: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#212529',
+    fontSize: 20,  // Increased font size
+    // fontWeight: 'bold',
+    color: '#000',
   },
-  score: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#28A745',
+  card: {
+    marginVertical: 8,
+    marginHorizontal: 16,
+    borderRadius: 8,
+    elevation: 4,
   },
-  noScore: {
-    color: '#DC3545',
+  scoreLabel: {
+    fontSize: 16,
+    color: '#000',
+    marginVertical: 4,
+  },
+  scoreValue: {
+    fontSize: 16,
+    fontWeight: 'bold',  // Only the score is bold
+    color: '#000',
   },
   message: {
-    margin: 20,
+    margin: 10,
     color: '#DC3545',
     textAlign: 'center',
     fontSize: 16,
   },
-  emptyMessage: {
-    textAlign: 'center',
-    marginTop: 50,
-    fontSize: 18,
-    color: '#6C757D',
+  exportButton: {
+    margin: 20,
+    backgroundColor: '#1E88E5',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  exportButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
