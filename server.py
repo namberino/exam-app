@@ -145,15 +145,30 @@ def get_tests():
         })
     return jsonify(test_list)
 
-@app.route('/tests/<test_id>', methods=['POST'])
+@app.route('/tests/<test_id>/submit', methods=['POST'])
 def submit_test(test_id):
-    data = request.get_json()
-    test = tests.find_one({'_id': ObjectId(test_id)})
-    if not test:
-        return jsonify({'error': 'Test not found'}), 404
-    scores = data['scores']
-    tests.update_one({'_id': ObjectId(test_id)}, {'$set': {'scores': scores}})
-    return jsonify({'message': 'Test submitted successfully'})
+    try:
+        data = request.get_json()
+        user_id = data['user_id']
+        score = data['score']
+
+        test = db.tests.find_one({'_id': ObjectId(test_id)})
+        if not test:
+            return jsonify({'error': 'Test not found'}), 404
+
+        # Update the scores dictionary in the test document
+        scores = test.get('scores', {})
+        scores[user_id] = score
+
+        # Update the test document in the database
+        db.tests.update_one(
+            {'_id': ObjectId(test_id)},
+            {'$set': {'scores': scores}}
+        )
+
+        return jsonify({'message': 'Test submitted successfully'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/tests/<test_id>', methods=['DELETE'])
 def delete_test(test_id):
@@ -178,7 +193,10 @@ def get_test(test_id):
             return jsonify({'error': 'Test not found'}), 404
 
         questions = db.questions.find({'_id': {'$in': [ObjectId(q_id) for q_id in test['questions']]}})
+        assigned_students = db.users.find({'_id': {'$in': test['assigned_students']}})
         question_list = []
+        student_list = []
+
         for question in questions:
             question_list.append({
                 '_id': str(question['_id']),
@@ -186,7 +204,13 @@ def get_test(test_id):
                 'choices': question['choices']
             })
 
-        return jsonify({'questions': question_list})
+        for student in assigned_students:
+            student_list.append({
+                '_id': str(student['_id']),
+                'name': student['name']
+            })
+
+        return jsonify({'questions': question_list, 'assigned_students': student_list, 'scores': test.get('scores', {})})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

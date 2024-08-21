@@ -13,6 +13,7 @@ import ViewTestAnswers from './components/ViewTestAnswers';
 import QuestionManager from './components/QuestionManager';
 import AdminDashboard from './components/AdminDashboard';
 import TestHistory from './components/TestHistory';
+import ViewTestScores from './components/ViewTestScores';
 
 const Stack = createStackNavigator();
 
@@ -32,6 +33,7 @@ const AppNavigator = () => {
           <Stack.Screen name="QuestionManager" component={QuestionManager} />
           <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
           <Stack.Screen name="TestHistory" component={TestHistory} />
+          <Stack.Screen name="ViewTestScores" component={ViewTestScores} />
     </Stack.Navigator>
   );
 };

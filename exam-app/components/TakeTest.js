@@ -55,7 +55,7 @@ const TakeTest = ({ route, navigation }) => {
     const score = (correctAnswers / totalQuestions) * 100;
 
     try {
-      await axios.post(`http://192.168.1.203:5000/tests/${testId}/submit`, { answers, user_id });
+      await axios.post(`http://192.168.1.203:5000/tests/${testId}/submit`, { answers, user_id, score });
       navigation.navigate('TestResult', { score, correctAnswers, totalQuestions });
     } catch (error) {
       setMessage('Error submitting test');

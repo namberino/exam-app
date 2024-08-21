@@ -58,6 +58,16 @@ const Home = ({ navigation }) => {
         </Button>
         )}
 
+        {user.userType === 'teacher' && (
+        <Button
+          mode="contained"
+          onPress={() => navigation.navigate('TestList')}
+          style={styles.button}
+        >
+          View Tests
+        </Button>
+        )}
+
         {user.userType === 'student' && (
         <Button
           mode="contained"

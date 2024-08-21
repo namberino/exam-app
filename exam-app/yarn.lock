@@ -3519,6 +3519,11 @@ expo-network@^6.0.1:
   resolved "https://registry.npmjs.org/expo-network/-/expo-network-6.0.1.tgz"
   integrity sha512-WXXvkt1H75ojHVa263Jq+qjIyMzCfaoRzHKzOBMuSyDDcma9WpvKJpR1YpEQZH/zDhSfkKvh7Q3wRGOJr1J+dQ==
 
+expo-sharing@~12.0.1:
+  version "12.0.1"
+  resolved "https://registry.npmjs.org/expo-sharing/-/expo-sharing-12.0.1.tgz"
+  integrity sha512-wBT+WeXwapj/9NWuLJO01vi9bdlchYu/Q/xD8slL/Ls4vVYku8CPqzkTtDFcjLrjtlJqyeHsdQXwKLvORmBIew==
+
 expo-status-bar@~1.12.1:
   version "1.12.1"
   resolved "https://registry.npmjs.org/expo-status-bar/-/expo-status-bar-1.12.1.tgz"

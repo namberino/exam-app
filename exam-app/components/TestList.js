@@ -25,7 +25,24 @@ const TestList = ({ navigation }) => {
     if (user.userType === 'student') {
       navigation.navigate('TakeTest', { testId });
     } else if (user.userType === 'teacher') {
-      navigation.navigate('ViewTestAnswers', { testId });
+        Alert.alert(
+            'Choose Action',
+            'What would you like to do?',
+            [
+              {
+                text: 'View Answers',
+                onPress: () => navigation.navigate('ViewTestAnswers', { testId }),
+              },
+              {
+                text: 'View Scores',
+                onPress: () => navigation.navigate('ViewTestScores', { testId }),
+              },
+              {
+                text: 'Cancel',
+                style: 'cancel',
+              },
+            ]
+        );
     }
   };
 
