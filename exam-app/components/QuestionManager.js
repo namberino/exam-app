@@ -5,7 +5,7 @@ import { Button, Text, Appbar, IconButton } from 'react-native-paper';
 import axios from 'axios';
 import Constants from 'expo-constants';
 
-const QuestionManager = () => {
+const QuestionManager = ({ navigation }) => {
   const [questions, setQuestions] = useState([]);
   const [filteredQuestions, setFilteredQuestions] = useState([]);
   const [chapters, setChapters] = useState([]);

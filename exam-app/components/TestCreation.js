@@ -4,7 +4,7 @@ import { Button, Text, Appbar, Card } from 'react-native-paper';
 import axios from 'axios';
 import { UserContext } from './UserContext';
 
-const TestCreation = () => {
+const TestCreation = ({ navigation }) => {
   const [questions, setQuestions] = useState([]);
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [message, setMessage] = useState('');
