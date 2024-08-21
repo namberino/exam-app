@@ -71,6 +71,7 @@ const TestList = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Appbar.Header>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Test List" />
         {user.userType === 'teacher' && (
           <Appbar.Action icon="plus" onPress={() => navigation.navigate('TestCreation')} />

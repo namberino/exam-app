@@ -22,6 +22,7 @@ const ViewTestAnswers = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Appbar.Header>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Test Answers" />
       </Appbar.Header>
       <FlatList

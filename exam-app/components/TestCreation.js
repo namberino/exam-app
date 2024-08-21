@@ -129,6 +129,7 @@ const TestCreation = () => {
   return (
     <View style={styles.container}>
       <Appbar.Header>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Create Test" />
       </Appbar.Header>
       <SectionList

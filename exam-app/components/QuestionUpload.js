@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { TextInput, Button, Text, IconButton } from 'react-native-paper';
+import { TextInput, Button, Text, IconButton, Appbar } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 import Constants from 'expo-constants';
 
-const QuestionUpload = () => {
+const QuestionUpload = ({ navigation }) => {
   const [content, setContent] = useState('');
   const [difficulty, setDifficulty] = useState('');
   const [chapter, setChapter] = useState('');
@@ -127,6 +127,11 @@ const QuestionUpload = () => {
   };
 
   return (
+    <>
+    <Appbar.Header>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content title="Question Upload" />
+    </Appbar.Header>
     <ScrollView style={styles.container}>
       <TextInput
         label="Question Content"
@@ -187,6 +192,7 @@ const QuestionUpload = () => {
       </Button>
       {message ? <Text style={styles.message}>{message}</Text> : null}
     </ScrollView>
+    </>
   );
 };
 

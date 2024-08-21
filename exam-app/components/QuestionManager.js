@@ -123,6 +123,7 @@ const QuestionManager = () => {
   return (
     <View style={styles.container}>
       <Appbar.Header>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Question Manager" />
       </Appbar.Header>
       <View style={styles.filterContainer}>

@@ -99,6 +99,7 @@ const AdminDashboard = () => {
   return (
     <View style={styles.container}>
       <Appbar.Header>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Admin Dashboard" />
       </Appbar.Header>
       <FlatList
