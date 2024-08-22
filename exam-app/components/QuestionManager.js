@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, TextInput, Modal, ScrollView, LayoutAnimation } from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity, TextInput, Modal, ScrollView, LayoutAnimation, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Button, Text, Appbar, Card, IconButton } from 'react-native-paper';
 import axios from 'axios';
@@ -104,6 +104,29 @@ const QuestionManager = ({ navigation }) => {
     setFiltersVisible(!filtersVisible);
   };
 
+  const handleDeleteQuestion = async (id) => {
+    Alert.alert(
+      'Delete Question',
+      'Are you sure you want to delete this question?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          onPress: async () => {
+            try {
+              await axios.delete(`http://192.168.1.203:5000/questions/${id}`);
+              setQuestions(prevQuestions => prevQuestions.filter(q => q._id !== id));
+              setFilteredQuestions(prevFilteredQuestions => prevFilteredQuestions.filter(q => q._id !== id));
+            } catch (error) {
+              console.error('Error deleting question', error);
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   return (
     <View style={styles.container}>
       <Appbar.Header style={styles.appbar}>
@@ -179,7 +202,7 @@ const QuestionManager = ({ navigation }) => {
                   icon="delete"
                   color="#FF5252"
                   size={24}
-                  onPress={() => console.log('Delete functionality to be implemented')}
+                  onPress={() => handleDeleteQuestion(item._id)}
                 />
               </Card.Actions>
             </Card>
@@ -294,7 +317,7 @@ const styles = StyleSheet.create({
   },
   clearButton: {
     marginTop: 10,
-    backgroundColor: '#FF5252', // Red clear button
+    backgroundColor: '#007BFF', // Red clear button
   },
   questionCard: {
     marginVertical: 5,
@@ -349,7 +372,7 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     marginTop: 10,
-    backgroundColor: '#FF5252',
+    backgroundColor: '#1976D2',
   },
 //   pickerWrapper: {
 //     borderWidth: 1,

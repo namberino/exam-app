@@ -345,5 +345,25 @@ def view_test_history(user_id):
 
     return jsonify(history_list)
 
+@app.route('/questions/<question_id>', methods=['DELETE'])
+def delete_question(question_id):
+    try:
+        # Convert question_id to ObjectId
+        question_id = ObjectId(question_id)
+        
+        # Find the question to delete
+        question = questions.find_one({'_id': question_id})
+        if not question:
+            return jsonify({'error': 'Question not found'}), 404
+        
+        # Delete the question
+        questions.delete_one({'_id': question_id})
+        
+        return jsonify({'message': 'Question deleted successfully'}), 200
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
