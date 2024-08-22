@@ -60,7 +60,7 @@ const TestHistory = ({ navigation }) => {
           <Card style={styles.card}>
             <Card.Title title={item.test_name || 'Test'} />
             <Card.Content>
-              <Text>Score: {item.score}</Text>
+              <Text>Score: {item.score} / 100</Text>
             </Card.Content>
           </Card>
         )}

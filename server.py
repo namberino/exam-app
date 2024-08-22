@@ -156,6 +156,9 @@ def submit_test(test_id):
         if not test:
             return jsonify({'error': 'Test not found'}), 404
 
+        # question_ids = test['questions']
+        # questions = db.questions.find({'_id': {'$in': [ObjectId(q_id) for q_id in question_ids]}})
+
         # Update the scores dictionary in the test document
         scores = test.get('scores', {})
         scores[user_id] = score
@@ -165,6 +168,23 @@ def submit_test(test_id):
             {'_id': ObjectId(test_id)},
             {'$set': {'scores': scores}}
         )
+
+        # Record the test submission in the test history
+        existing_record = test_history.find_one({'user_id': user_id, 'test_id': ObjectId(test_id)})
+
+        if existing_record:
+            # Update the existing record with the new score
+            test_history.update_one(
+                {'user_id': user_id, 'test_id': ObjectId(test_id)},
+                {'$set': {'score': score}}
+            )
+        else:
+            # Insert a new record if none exists
+            test_history.insert_one({
+                'user_id': ObjectId(user_id),
+                'test_id': ObjectId(test_id),
+                'score': score
+            })
 
         return jsonify({'message': 'Test submitted successfully'})
     except Exception as e:
@@ -213,31 +233,6 @@ def get_test(test_id):
         return jsonify({'questions': question_list, 'assigned_students': student_list, 'scores': test.get('scores', {})})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
-@app.route('/tests/<test_id>/submit', methods=['POST'])
-def submit_test_answer(test_id):
-    data = request.get_json()
-    user_id = ObjectId(data['user_id'])
-    answers = data['answers']  # answers should be a dictionary of {question_id: answer}
-    
-    test = tests.find_one({'_id': ObjectId(test_id)})
-    if not test:
-        return jsonify({'error': 'Test not found'}), 404
-
-    question_ids = test['questions']
-    questions = db.questions.find({'_id': {'$in': [ObjectId(q_id) for q_id in question_ids]}})
-
-    correct_answers = {str(q['_id']): q['correct_answer'] for q in questions}
-    score = sum(1 for qid, ans in answers.items() if correct_answers.get(qid) == ans)
-
-    # Record the test submission in the test history
-    test_history.insert_one({
-        'user_id': user_id,
-        'test_id': ObjectId(test_id),
-        'score': score
-    })
-
-    return jsonify({'score': score})
 
 @app.route('/search_students', methods=['GET'])
 def search_students():
