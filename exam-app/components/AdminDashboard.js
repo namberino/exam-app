@@ -22,7 +22,7 @@ const AdminDashboard = () => {
         apiURL = `http://${expoURL}:5000`;
       } else {
         // Fallback IP address for production or undefined scenarios
-        apiURL = 'http://localhost:5000'; // You can change this to a default production API URL
+        apiURL = 'http://localhost:5000';
       }
 
       setBaseURL(apiURL);

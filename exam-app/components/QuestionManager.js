@@ -29,7 +29,7 @@ const QuestionManager = ({ navigation }) => {
         const expoURL = Constants.manifest2.extra.expoGo.debuggerHost.split(':')[0];
         apiURL = `http://${expoURL}:5000`;
       } else {
-        apiURL = 'http://localhost:5000'; // Fallback or production URL
+        apiURL = 'http://localhost:5000';
       }
 
       setBaseURL(apiURL);
