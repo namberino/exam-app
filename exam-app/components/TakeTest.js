@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
-import { Text, Button, Appbar } from 'react-native-paper';
+import { Text, Button, Appbar, IconButton } from 'react-native-paper';
 import axios from 'axios';
 import { UserContext } from './UserContext';
 
@@ -81,14 +81,21 @@ const TakeTest = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header>
-        <Appbar.Content title="Take Test" />
+      <Appbar.Header style={styles.appbar}>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content title="Take Test" titleStyle={styles.appbarTitle} />
+        <IconButton
+          icon="help-circle"
+          size={24}
+          onPress={() => Alert.alert('Help', 'Select the correct answer for each question.')}
+        />
       </Appbar.Header>
       {message ? <Text style={styles.message}>{message}</Text> : null}
       <FlatList
         data={questions}
         keyExtractor={(item) => item._id}
         renderItem={renderItem}
+        contentContainerStyle={styles.list}
       />
       <Button mode="contained" onPress={submitTest} style={styles.submitButton}>
         Submit Test
@@ -100,22 +107,35 @@ const TakeTest = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: '#E3F2FD',
+  },
+  appbar: {
+    backgroundColor: '#2196F3', // Primary light blue for app bar
+  },
+  appbarTitle: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
+  list: {
+    padding: 16,
   },
   questionContainer: {
     marginBottom: 20,
-    paddingHorizontal: 15,
+    padding: 16,
+    borderRadius: 8,
+    backgroundColor: '#BBDEFB',
+    elevation: 2,
   },
   questionContent: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
     color: '#212529',
+    marginBottom: 10,
   },
   choice: {
-    padding: 10,
+    padding: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#CED4DA',
+    borderBottomColor: '#E9ECEF',
   },
   choiceText: {
     fontSize: 16,
@@ -127,12 +147,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   submitButton: {
-    margin: 20,
+    marginHorizontal: 10,
+    marginBottom: 5,
+    paddingVertical: 12,
+    borderRadius: 8,
+    backgroundColor: '#2196F3',
   },
   message: {
-    marginBottom: 10,
+    margin: 10,
     color: '#DC3545',
     textAlign: 'center',
+    fontSize: 16,
   },
 });
 

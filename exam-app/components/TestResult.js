@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
-import { Appbar, Button } from 'react-native-paper';
+import { Appbar, Button, IconButton } from 'react-native-paper';
 import { UserContext } from './UserContext';
 
 const TestResult = ({ route, navigation }) => {
@@ -9,14 +9,20 @@ const TestResult = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header>
-        <Appbar.Content title="Test Result" />
+      <Appbar.Header style={styles.appbar}>
+        <Appbar.Content title="Test Result" titleStyle={styles.appbarTitle} />
       </Appbar.Header>
       <View style={styles.resultContainer}>
-        <Text style={styles.resultText}>Your Score:</Text>
+        <IconButton
+          icon="trophy"
+          size={80}
+          color="#FFD700"
+          style={styles.trophyIcon}
+        />
+        <Text style={styles.resultText}>Your Score</Text>
         <Text style={styles.score}>{score}</Text>
         <Text style={styles.correctAnswersText}>
-          You got {correctAnswers} out of {totalQuestions} questions correct
+           {correctAnswers} / {totalQuestions} correct answers
         </Text>
         <Button mode="contained" onPress={() => navigation.navigate('TestList')} style={styles.button}>
           Back to Test List
@@ -29,20 +35,32 @@ const TestResult = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: '#E3F2FD',
+  },
+  appbar: {
+    backgroundColor: '#2196F3', // Primary light blue for app bar
+  },
+  appbarTitle: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
   },
   resultContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 20,
+  },
+  trophyIcon: {
+    marginBottom: 20,
   },
   resultText: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#212529',
+    // marginBottom: 10,
   },
   score: {
-    fontSize: 48,
+    fontSize: 64,
     fontWeight: 'bold',
     color: '#28A745',
     marginVertical: 20,
@@ -50,10 +68,14 @@ const styles = StyleSheet.create({
   correctAnswersText: {
     fontSize: 18,
     color: '#212529',
-    marginVertical: 10,
+    textAlign: 'center',
+    marginBottom: 30,
   },
   button: {
     marginTop: 20,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    backgroundColor: '#2196F3',
   },
 });
 

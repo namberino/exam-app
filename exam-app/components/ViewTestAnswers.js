@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
-import { Text, Card, Appbar } from 'react-native-paper';
+import { Text, Card, Appbar, IconButton } from 'react-native-paper';
 import axios from 'axios';
 
 const ViewTestAnswers = ({ route, navigation }) => {
@@ -21,9 +21,9 @@ const ViewTestAnswers = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header>
+      <Appbar.Header style={styles.appbar}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Test Answers" />
+        <Appbar.Content title="Test Answers" titleStyle={styles.appbarTitle} />
       </Appbar.Header>
       <FlatList
         data={questions}
@@ -33,9 +33,11 @@ const ViewTestAnswers = ({ route, navigation }) => {
             <Card.Content>
               <Text style={styles.questionContent}>{item.content}</Text>
               {item.choices.map((choice, index) => (
-                <Text key={index} style={choice.is_correct ? styles.correctAnswer : styles.answer}>
-                  {choice.text}
-                </Text>
+                <View key={index} style={styles.choiceContainer}>
+                  <Text style={choice.is_correct ? styles.correctAnswer : styles.answer}>
+                    {choice.text}
+                  </Text>
+                </View>
               ))}
             </Card.Content>
           </Card>
@@ -48,17 +50,28 @@ const ViewTestAnswers = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: '#E3F2FD',
+  },
+  appbar: {
+    backgroundColor: '#2196F3', // Primary light blue
+  },
+  appbarTitle: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
   },
   card: {
     margin: 10,
     borderRadius: 8,
+    backgroundColor: '#BBDEFB',
     elevation: 3,
   },
   questionContent: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#212529',
+  },
+  choiceContainer: {
+    marginTop: 8,
   },
   answer: {
     fontSize: 14,

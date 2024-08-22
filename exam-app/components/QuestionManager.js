@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, TextInput, Modal, ScrollView } from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity, TextInput, Modal, ScrollView, LayoutAnimation } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { Button, Text, Appbar, IconButton } from 'react-native-paper';
+import { Button, Text, Appbar, Card, IconButton } from 'react-native-paper';
 import axios from 'axios';
 import Constants from 'expo-constants';
+import { MaterialIcons } from '@expo/vector-icons'; // Import Material Icons
 
 const QuestionManager = ({ navigation }) => {
   const [questions, setQuestions] = useState([]);
@@ -16,25 +17,26 @@ const QuestionManager = ({ navigation }) => {
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(null);
+  const [filtersVisible, setFiltersVisible] = useState(true); // State to toggle filters
 
   useEffect(() => {
     const fetchQuestions = async () => {
-        try {
-            const response = await axios.get(`http://192.168.1.203:5000/questions`);
-            const questionsData = response.data;
-            setQuestions(questionsData);
-            setFilteredQuestions(questionsData);
+      try {
+        const response = await axios.get('http://192.168.1.203:5000/questions');
+        const questionsData = response.data;
+        setQuestions(questionsData);
+        setFilteredQuestions(questionsData);
 
-            const uniqueChapters = [...new Set(questionsData.map(q => q.chapter))];
-            const uniqueSubjects = [...new Set(questionsData.map(q => q.subject))];
-            const uniqueDifficulties = ['Easy', 'Medium', 'Hard'];
+        const uniqueChapters = [...new Set(questionsData.map(q => q.chapter))];
+        const uniqueSubjects = [...new Set(questionsData.map(q => q.subject))];
+        const uniqueDifficulties = ['Easy', 'Medium', 'Hard'];
 
-            setChapters(uniqueChapters);
-            setSubjects(uniqueSubjects);
-            setDifficulties(uniqueDifficulties);
-        } catch (error) {
-            console.error('Error fetching questions', error);
-        }
+        setChapters(uniqueChapters);
+        setSubjects(uniqueSubjects);
+        setDifficulties(uniqueDifficulties);
+      } catch (error) {
+        console.error('Error fetching questions', error);
+      }
     };
     fetchQuestions();
   }, []);
@@ -94,131 +96,173 @@ const QuestionManager = ({ navigation }) => {
     setSelectedChapter('');
     setSelectedSubject('');
     setSelectedDifficulty('');
+    setFilteredQuestions(questions); // Reset the filtered questions to the full list
+  };
+
+  const toggleFilters = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setFiltersVisible(!filtersVisible);
   };
 
   return (
     <View style={styles.container}>
-      <Appbar.Header>
+      <Appbar.Header style={styles.appbar}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Question Manager" />
+        <Appbar.Content title="Question Manager" titleStyle={styles.appbarTitle} />
+        <Appbar.Action 
+          icon={filtersVisible ? "filter-outline" : "filter-remove-outline"} 
+          onPress={toggleFilters} 
+        />
       </Appbar.Header>
-      <View style={styles.filterContainer}>
-        <Picker
-          selectedValue={selectedChapter}
-          onValueChange={(itemValue) => setSelectedChapter(itemValue)}
-          style={styles.picker}
-        >
-          <Picker.Item label="Filter by Chapter" value="" />
-          {chapters.map((chapter, index) => (
-            <Picker.Item key={index} label={chapter} value={chapter} />
-          ))}
-        </Picker>
 
-        <Picker
-          selectedValue={selectedSubject}
-          onValueChange={(itemValue) => setSelectedSubject(itemValue)}
-          style={styles.picker}
-        >
-          <Picker.Item label="Filter by Subject" value="" />
-          {subjects.map((subject, index) => (
-            <Picker.Item key={index} label={subject} value={subject} />
-          ))}
-        </Picker>
+      {filtersVisible && (
+        <View style={styles.filterContainer}>
+          <Picker
+            selectedValue={selectedChapter}
+            onValueChange={(itemValue) => setSelectedChapter(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Filter by Chapter" value="" />
+            {chapters.map((chapter, index) => (
+              <Picker.Item key={index} label={chapter} value={chapter} />
+            ))}
+          </Picker>
 
-        <Picker
-          selectedValue={selectedDifficulty}
-          onValueChange={(itemValue) => setSelectedDifficulty(itemValue)}
-          style={styles.ppicker}
-        >
-          <Picker.Item label="Filter by Difficulty" value="" />
-          {difficulties.map((difficulty, index) => (
-            <Picker.Item key={index} label={difficulty} value={difficulty} />
-          ))}
-        </Picker>
+          <Picker
+            selectedValue={selectedSubject}
+            onValueChange={(itemValue) => setSelectedSubject(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Filter by Subject" value="" />
+            {subjects.map((subject, index) => (
+              <Picker.Item key={index} label={subject} value={subject} />
+            ))}
+          </Picker>
 
-        <Button mode="contained" onPress={clearFilters} style={styles.clearButton}>
-          Clear Filters
-        </Button>
-      </View>
+          <Picker
+            selectedValue={selectedDifficulty}
+            onValueChange={(itemValue) => setSelectedDifficulty(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Filter by Difficulty" value="" />
+            {difficulties.map((difficulty, index) => (
+              <Picker.Item key={index} label={difficulty} value={difficulty} />
+            ))}
+          </Picker>
+
+          <Button mode="contained" onPress={clearFilters} style={styles.clearButton}>
+            Clear Filters
+          </Button>
+        </View>
+      )}
 
       <FlatList
         data={filteredQuestions}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => openEditModal(item)}>
-            <View style={styles.questionContainer}>
-              <Text style={styles.questionText}>{item.content}</Text>
-              <Text style={styles.questionDetail}>Chapter: {item.chapter}</Text>
-              <Text style={styles.questionDetail}>Subject: {item.subject}</Text>
-              <Text style={styles.questionDetail}>Difficulty: {item.difficulty}</Text>
-            </View>
+            <Card style={styles.questionCard}>
+              <Card.Content>
+                <Text style={styles.questionText}>{item.content}</Text>
+                <Text style={styles.questionDetail}>Chapter: {item.chapter}</Text>
+                <Text style={styles.questionDetail}>Subject: {item.subject}</Text>
+                <Text style={styles.questionDetail}>Difficulty: {item.difficulty}</Text>
+              </Card.Content>
+              <Card.Actions>
+                <IconButton
+                  icon="pencil"
+                  color="#0D47A1"
+                  size={24}
+                  onPress={() => openEditModal(item)}
+                />
+                <IconButton
+                  icon="delete"
+                  color="#FF5252"
+                  size={24}
+                  onPress={() => console.log('Delete functionality to be implemented')}
+                />
+              </Card.Actions>
+            </Card>
           </TouchableOpacity>
         )}
       />
 
       <Modal visible={editModalVisible} animationType="slide">
-        <ScrollView style={styles.modalContainer}>
-          <TextInput
-            label="Question Content"
-            value={currentQuestion?.content || ''}
-            onChangeText={(text) => setCurrentQuestion({ ...currentQuestion, content: text })}
-            style={styles.input}
-          />
+        <View style={styles.modalContainer}>
+          <Appbar.Header style={styles.modalAppbar}>
+            <Appbar.BackAction onPress={() => setEditModalVisible(false)} />
+            <Appbar.Content title="Edit Question" titleStyle={styles.modalTitle} />
+          </Appbar.Header>
 
-          <Picker
-            selectedValue={currentQuestion?.difficulty || ''}
-            onValueChange={(itemValue) => setCurrentQuestion({ ...currentQuestion, difficulty: itemValue })}
-            style={styles.picker}
-          >
-            <Picker.Item label="Select Difficulty" value="" />
-            <Picker.Item label="Easy" value="Easy" />
-            <Picker.Item label="Medium" value="Medium" />
-            <Picker.Item label="Hard" value="Hard" />
-          </Picker>
+          <ScrollView style={styles.modalBody}>
+            <TextInput
+              label="Question Content"
+              value={currentQuestion?.content || ''}
+              onChangeText={(text) => setCurrentQuestion({ ...currentQuestion, content: text })}
+              style={styles.input}
+              mode="outlined"
+              theme={{ colors: { primary: '#0D47A1' } }} // Blue primary color for border and label
+            />
 
-          <TextInput
-            label="Chapter"
-            value={currentQuestion?.chapter || ''}
-            onChangeText={(text) => setCurrentQuestion({ ...currentQuestion, chapter: text })}
-            style={styles.input}
-          />
+            <Picker
+              selectedValue={currentQuestion?.difficulty || ''}
+              onValueChange={(itemValue) => setCurrentQuestion({ ...currentQuestion, difficulty: itemValue })}
+              style={styles.picker}
+            >
+              <Picker.Item label="Select Difficulty" value="" />
+              <Picker.Item label="Easy" value="Easy" />
+              <Picker.Item label="Medium" value="Medium" />
+              <Picker.Item label="Hard" value="Hard" />
+            </Picker>
 
-          <Picker
-            selectedValue={currentQuestion?.subject || ''}
-            onValueChange={(itemValue) => setCurrentQuestion({ ...currentQuestion, subject: itemValue })}
-            style={styles.picker}
-          >
-            <Picker.Item label="Select Subject" value="" />
-            {subjects.map((subject, index) => (
-              <Picker.Item key={index} label={subject} value={subject} />
+            <TextInput
+              label="Chapter"
+              value={currentQuestion?.chapter || ''}
+              onChangeText={(text) => setCurrentQuestion({ ...currentQuestion, chapter: text })}
+              style={styles.input}
+              mode="outlined"
+              theme={{ colors: { primary: '#0D47A1' } }} // Blue primary color for border and label
+            />
+
+            <Picker
+              selectedValue={currentQuestion?.subject || ''}
+              onValueChange={(itemValue) => setCurrentQuestion({ ...currentQuestion, subject: itemValue })}
+              style={styles.picker}
+            >
+              <Picker.Item label="Select Subject" value="" />
+              {subjects.map((subject, index) => (
+                <Picker.Item key={index} label={subject} value={subject} />
+              ))}
+            </Picker>
+
+            {currentQuestion?.choices?.map((choice, index) => (
+              <View key={index} style={styles.choiceContainer}>
+                <TextInput
+                  label={`Choice ${index + 1}`}
+                  value={choice.text}
+                  onChangeText={(text) => handleChoiceChange(index, text)}
+                  style={styles.choiceInput}
+                  mode="outlined"
+                  theme={{ colors: { primary: '#0D47A1' } }} // Blue primary color for border and label
+                />
+                <IconButton
+                  icon={choice.is_correct ? 'check-circle' : 'circle'}
+                  color={choice.is_correct ? '#28A745' : '#B0BEC5'}
+                  size={24}
+                  onPress={() => handleChoiceCorrectnessChange(index, !choice.is_correct)}
+                />
+              </View>
             ))}
-          </Picker>
 
-          {currentQuestion?.choices?.map((choice, index) => (
-            <View key={index} style={styles.choiceContainer}>
-              <TextInput
-                label={`Choice ${index + 1}`}
-                value={choice.text}
-                onChangeText={(text) => handleChoiceChange(index, text)}
-                style={styles.choiceInput}
-              />
-              <IconButton
-                icon={choice.is_correct ? 'check-circle' : 'circle'}
-                color={choice.is_correct ? '#28A745' : '#212529'}
-                size={24}
-                onPress={() => handleChoiceCorrectnessChange(index, !choice.is_correct)}
-              />
-            </View>
-          ))}
+            <Button mode="contained" onPress={handleSaveQuestion} style={styles.saveButton}>
+              Save Changes
+            </Button>
 
-          <Button mode="contained" onPress={handleSaveQuestion} style={styles.saveButton}>
-            Save Changes
-          </Button>
-
-          <Button mode="contained" onPress={() => setEditModalVisible(false)} style={styles.cancelButton}>
-            Cancel
-          </Button>
-        </ScrollView>
+            <Button mode="contained" onPress={() => setEditModalVisible(false)} style={styles.cancelButton}>
+              Cancel
+            </Button>
+          </ScrollView>
+        </View>
       </Modal>
     </View>
   );
@@ -227,53 +271,98 @@ const QuestionManager = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: '#E3F2FD', // Light blue background similar to home page
+  },
+  appbar: {
+    backgroundColor: '#2196F3', // Primary light blue for app bar
+  },
+  appbarTitle: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
   },
   filterContainer: {
     padding: 10,
-    backgroundColor: '#FFF',
+    backgroundColor: '#BBDEFB', // Light blue filter container background
+    margin: 10,
+    borderRadius: 8,
+    elevation: 3,
   },
   picker: {
-    marginBottom: 10,
+    marginVertical: 8,
+    backgroundColor: '#E3F2FD', // Light blue picker background
+    borderRadius: 8,
   },
-  questionContainer: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderColor: '#E9ECEF',
+  clearButton: {
+    marginTop: 10,
+    backgroundColor: '#FF5252', // Red clear button
+  },
+  questionCard: {
+    marginVertical: 5,
+    marginHorizontal: 10,
+    backgroundColor: '#BBDEFB', // Light blue card background
+    borderRadius: 8,
+    elevation: 3,
   },
   questionText: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#0D47A1', // Darker blue for question text
   },
   questionDetail: {
     fontSize: 14,
-    color: '#6C757D',
+    color: '#1976D2', // Slightly darker blue for details
   },
   modalContainer: {
+    flex: 1,
+    backgroundColor: '#E3F2FD', // Light blue background
+  },
+  modalAppbar: {
+    backgroundColor: '#2196F3', // Dark blue for modal app bar
+  },
+  modalTitle: {
+    color: '#FFFFFF', // White text color for modal title
+  },
+  modalBody: {
     padding: 20,
-    backgroundColor: '#F8F9FA',
   },
   input: {
-    marginBottom: 10,
+    marginVertical: 8,
+    backgroundColor: '#BBDEFB', // Light blue background for inputs
+    borderRadius: 10,
+    paddingHorizontal: 12,
   },
   choiceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    marginVertical: 5,
   },
   choiceInput: {
     flex: 1,
     marginRight: 10,
+    backgroundColor: '#BBDEFB', // Light blue background for choices
+    borderRadius: 10,
+    paddingHorizontal: 12,
   },
   saveButton: {
-    marginVertical: 10,
+    marginTop: 20,
+    backgroundColor: '#2196F3', // Dark blue for save button
   },
   cancelButton: {
-    marginVertical: 10,
-  },
-  clearButton: {
     marginTop: 10,
+    backgroundColor: '#FF5252',
   },
+//   pickerWrapper: {
+//     borderWidth: 1,
+//     borderColor: '#0D47A1', // Blue border for picker container
+//     borderRadius: 5,
+//     marginBottom: 10,
+//     overflow: 'hidden',
+//   },
+//   picker: {
+//     height: 50,
+//     backgroundColor: '#E3F2FD', // Light blue background for Picker
+//     color: '#0D47A1', // Blue text color for Picker items
+//   },
 });
 
 export default QuestionManager;

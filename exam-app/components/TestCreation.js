@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, SectionList, TouchableOpacity, TextInput } from 'react-native';
-import { Button, Text, Appbar, Card } from 'react-native-paper';
+import { Button, Text, Appbar, Card, IconButton } from 'react-native-paper';
 import axios from 'axios';
 import { UserContext } from './UserContext';
 
@@ -94,6 +94,12 @@ const TestCreation = ({ navigation }) => {
           style={styles.listItem}
         >
           <Text style={styles.itemText}>{item.name}</Text>
+          <IconButton
+            icon="plus-circle"
+            color="#007BFF"
+            size={20}
+            onPress={() => handleAddStudent(item)}
+          />
         </TouchableOpacity>
       );
     }
@@ -103,9 +109,12 @@ const TestCreation = ({ navigation }) => {
         <Card key={item._id} style={styles.card}>
           <View style={styles.cardContent}>
             <Text style={styles.itemText}>{item.name}</Text>
-            <Button onPress={() => handleRemoveStudent(item._id)} mode="contained" style={styles.removeButton}>
-              Remove
-            </Button>
+            <IconButton
+              icon="minus-circle"
+              color="#FF5252"
+              size={20}
+              onPress={() => handleRemoveStudent(item._id)}
+            />
           </View>
         </Card>
       );
@@ -121,6 +130,11 @@ const TestCreation = ({ navigation }) => {
           ]}
         >
           <Text style={styles.itemText}>{item.content}</Text>
+          <IconButton
+            icon={isSelected(item._id) ? "check-circle" : "circle-outline"}
+            color={isSelected(item._id) ? "#28A745" : "#007BFF"}
+            size={20}
+          />
         </TouchableOpacity>
       );
     }
@@ -129,9 +143,9 @@ const TestCreation = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.headerWrapper}>
-        <Appbar.Header>
+        <Appbar.Header style={styles.appbar}>
             <Appbar.BackAction onPress={() => navigation.goBack()} />
-            <Appbar.Content title="Create Test" />
+            <Appbar.Content title="Create Test" titleStyle={styles.appbarTitle} />
         </Appbar.Header>
       </View>
       <SectionList
@@ -180,6 +194,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F9FA',
     padding: 16,
   },
+  appbar: {
+    backgroundColor: '#2196F3', // Primary light blue for app bar
+  },
+  appbarTitle: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
   headerWrapper: {
     marginHorizontal: -16,
     marginVertical: -16,
@@ -190,30 +211,33 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    borderColor: '#F8F9FA',
+    borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 4,
     paddingHorizontal: 8,
     marginBottom: 12,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#fff',
   },
   sectionHeader: {
     paddingVertical: 8,
     paddingHorizontal: 16,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#007BFF',
     borderRadius: 4,
     marginBottom: 8,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#fff',
   },
   listItem: {
     padding: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
     backgroundColor: '#fff',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   selectedItem: {
     backgroundColor: '#e3f2fd',
@@ -234,13 +258,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 12,
   },
-  removeButton: {
-    backgroundColor: '#ff5252',
-    borderRadius: 4,
-  },
   button: {
     marginTop: 16,
-    backgroundColor: '#212529',
+    backgroundColor: '#007BFF',
   },
   message: {
     marginTop: 16,

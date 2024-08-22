@@ -25,24 +25,24 @@ const TestList = ({ navigation }) => {
     if (user.userType === 'student') {
       navigation.navigate('TakeTest', { testId });
     } else if (user.userType === 'teacher') {
-        Alert.alert(
-            'Choose Action',
-            'What would you like to do?',
-            [
-              {
-                text: 'View Answers',
-                onPress: () => navigation.navigate('ViewTestAnswers', { testId }),
-              },
-              {
-                text: 'View Scores',
-                onPress: () => navigation.navigate('ViewTestScores', { testId }),
-              },
-              {
-                text: 'Cancel',
-                style: 'cancel',
-              },
-            ]
-        );
+      Alert.alert(
+        'Choose Action',
+        'What would you like to do?',
+        [
+          {
+            text: 'View Answers',
+            onPress: () => navigation.navigate('ViewTestAnswers', { testId }),
+          },
+          {
+            text: 'View Scores',
+            onPress: () => navigation.navigate('ViewTestScores', { testId }),
+          },
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+        ]
+      );
     }
   };
 
@@ -70,13 +70,20 @@ const TestList = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Test List" />
-        {user.userType === 'teacher' && (
-          <Appbar.Action icon="plus" onPress={() => navigation.navigate('TestCreation')} />
-        )}
-      </Appbar.Header>
+      <View style={styles.headerWrapper}>  
+        <Appbar.Header style={styles.appbar}>
+          <Appbar.BackAction onPress={() => navigation.goBack()} />
+          <Appbar.Content title="Test List" titleStyle={styles.appbarTitle} />
+
+          {user.userType === 'teacher' && (
+            <Appbar.Action
+              icon="plus-circle-outline"
+              onPress={() => navigation.navigate('TestCreation')}
+              color="#fff"
+            />
+          )}
+        </Appbar.Header>
+      </View>
       {message ? <Text style={styles.message}>{message}</Text> : null}
       <FlatList
         data={tests}
@@ -85,18 +92,19 @@ const TestList = ({ navigation }) => {
           <Card style={styles.card}>
             <TouchableOpacity onPress={() => handlePress(item._id)}>
               <Card.Content>
-                <Text style={styles.testTitle}>ID: {item.name}</Text>
+                <Text style={styles.testTitle}>{item.name}</Text>
                 <Text style={styles.testDescription}>
-                  Number of questions: {item.questions.length}
+                  {item.questions.length} Questions
                 </Text>
               </Card.Content>
             </TouchableOpacity>
             {user.userType === 'teacher' && (
               <Card.Actions>
                 <IconButton
-                  icon="delete"
-                  size={20}
+                  icon="delete-outline"
+                  size={24}
                   onPress={() => confirmDelete(item._id)}
+                  color="#FF5252"
                 />
               </Card.Actions>
             )}
@@ -110,24 +118,39 @@ const TestList = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: '#E3F2FD',
+    padding: 16,
+  },
+  appbar: {
+    backgroundColor: '#2196F3', // Primary light blue for app bar
+  },
+  appbarTitle: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
+  headerWrapper: {
+    marginHorizontal: -16,
+    marginVertical: -16,
+    marginBottom: 16,
   },
   card: {
-    margin: 10,
+    marginBottom: 16,
+    paddingVertical: 10,
     borderRadius: 8,
     elevation: 3,
+    backgroundColor: '#BBDEFB',
   },
   testTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#212529',
+    color: '#333',
   },
   testDescription: {
     fontSize: 14,
     color: '#6C757D',
   },
   message: {
-    margin: 10,
+    marginVertical: 10,
     color: '#28A745',
     textAlign: 'center',
   },

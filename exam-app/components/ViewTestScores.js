@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Alert, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, FlatList, Alert } from 'react-native';
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
-import { Appbar, Card } from 'react-native-paper';
+import { Appbar, Card, Text, IconButton } from 'react-native-paper';
 
 const ViewTestScores = ({ route, navigation }) => {
   const { testId } = route.params;
@@ -30,7 +30,7 @@ const ViewTestScores = ({ route, navigation }) => {
     };
 
     fetchScores();
-  }, []);
+  }, [testId]);
 
   const exportToCSV = async () => {
     if (scores.length === 0) {
@@ -57,20 +57,20 @@ const ViewTestScores = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header>
+      <Appbar.Header style={styles.appbar}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Test Scores" />
+        <Appbar.Content title="Test Scores" titleStyle={styles.appbarTitle} />
         <Appbar.Action icon="download" onPress={exportToCSV} />
       </Appbar.Header>
 
       {message ? <Text style={styles.message}>{message}</Text> : null}
-      
+
       <FlatList
         data={scores}
         keyExtractor={(item) => item.studentId}
         renderItem={({ item }) => (
           <Card style={styles.card}>
-            <Card.Title titleStyle={styles.studentName} title={item.studentName} />
+            <Card.Title title={item.studentName} titleStyle={styles.studentName} />
             <Card.Content>
               <Text style={styles.scoreLabel}>
                 Score: <Text style={styles.scoreValue}>{item.score}</Text>
@@ -79,10 +79,6 @@ const ViewTestScores = ({ route, navigation }) => {
           </Card>
         )}
       />
-
-      {/* <TouchableOpacity onPress={exportToCSV} style={styles.exportButton}>
-        <Text style={styles.exportButtonText}>Export to CSV</Text>
-      </TouchableOpacity> */}
     </View>
   );
 };
@@ -90,46 +86,42 @@ const ViewTestScores = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#E3F2FD',
   },
-  studentName: {
-    fontSize: 20,  // Increased font size
-    // fontWeight: 'bold',
-    color: '#000',
+  appbar: {
+    backgroundColor: '#2196F3', // Primary light blue
+  },
+  appbarTitle: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
   },
   card: {
     marginVertical: 8,
     marginHorizontal: 16,
     borderRadius: 8,
-    elevation: 4,
+    elevation: 3,
+    backgroundColor: '#BBDEFB',
+  },
+  studentName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#212529',
   },
   scoreLabel: {
     fontSize: 16,
-    color: '#000',
+    color: '#6C757D',
     marginVertical: 4,
   },
   scoreValue: {
     fontSize: 16,
-    fontWeight: 'bold',  // Only the score is bold
-    color: '#000',
+    fontWeight: 'bold',
+    color: '#212529',
   },
   message: {
     margin: 10,
     color: '#DC3545',
     textAlign: 'center',
     fontSize: 16,
-  },
-  exportButton: {
-    margin: 20,
-    backgroundColor: '#1E88E5',
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  exportButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });
 

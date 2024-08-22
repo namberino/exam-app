@@ -1,10 +1,10 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { TextInput, Button, Text, Appbar } from 'react-native-paper';
+import React, { useContext, useState } from 'react';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import { TextInput, Button, Text, Appbar, Card } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
-import Constants from 'expo-constants';
 import { UserContext } from './UserContext';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const Login = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -19,9 +19,8 @@ const Login = ({ navigation }) => {
       const response = await axios.post(`http://192.168.1.203:5000/register`, {
         name,
         password,
-        user_type: userType
+        user_type: userType,
       });
-      console.log('Register response:', response);
       setIsRegistering(false);
       setMessage(response.data.message);
       setName('');
@@ -53,52 +52,60 @@ const Login = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header>
-        <Appbar.Content title={isRegistering ? 'Register' : 'Login'} />
-      </Appbar.Header>
-      <View style={styles.content}>
-        <TextInput
-          label="Name"
-          value={name}
-          onChangeText={setName}
-          style={styles.input}
-        />
-        <TextInput
-          label="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          style={styles.input}
-        />
+      <ScrollView contentContainerStyle={styles.content}>
+        <Card style={styles.card}>
+          <Card.Title
+            title={isRegistering ? 'Create an Account' : 'Welcome Back'}
+            titleStyle={styles.cardTitle}
+            left={(props) => <MaterialIcons name={isRegistering ? 'person-add' : 'login'} size={24} color="#0D47A1" />}
+          />
+          <Card.Content>
+            <TextInput
+              label="Name"
+              value={name}
+              onChangeText={setName}
+              style={styles.input}
+              mode="outlined"
+            />
+            <TextInput
+              label="Password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              style={styles.input}
+              mode="outlined"
+            />
 
-        {isRegistering && (
-          <Picker
-            selectedValue={userType}
-            onValueChange={(itemValue) => setUserType(itemValue)}
-            style={styles.picker}
-          >
-            <Picker.Item label="Student" value="student" />
-            <Picker.Item label="Teacher" value="teacher" />
-          </Picker>
-        )}
+            {isRegistering && (
+              <Picker
+                selectedValue={userType}
+                onValueChange={(itemValue) => setUserType(itemValue)}
+                style={styles.picker}
+              >
+                <Picker.Item label="Student" value="student" />
+                <Picker.Item label="Teacher" value="teacher" />
+              </Picker>
+            )}
 
-        {!isRegistering ? (
-          <>
-            <Button mode="contained" onPress={handleLogin} style={styles.button}>
-              Login
-            </Button>
-            <Button mode="outlined" onPress={() => setIsRegistering(true)} style={styles.button}>
-              Register
-            </Button>
-          </>
-        ) : (
-          <Button mode="contained" onPress={handleRegister} style={styles.button}>
-            Create Account
-          </Button>
-        )}
+            {!isRegistering ? (
+              <>
+                <Button mode="contained" onPress={handleLogin} style={styles.button}>
+                  Login
+                </Button>
+                <Button mode="outlined" onPress={() => setIsRegistering(true)} style={styles.button}>
+                  Register
+                </Button>
+              </>
+            ) : (
+              <Button mode="contained" onPress={handleRegister} style={styles.button}>
+                Create Account
+              </Button>
+            )}
+          </Card.Content>
+        </Card>
 
         {message ? <Text style={styles.message}>{message}</Text> : null}
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -106,21 +113,40 @@ const Login = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#E3F2FD', // Light blue background
+  },
+  appbar: {
+    backgroundColor: '#2196F3', // Primary light blue
+  },
+  appbarTitle: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
   },
   content: {
+    paddingTop: 50,
     padding: 20,
-    flex: 1,
-    justifyContent: 'center',
+    paddingBottom: 40, // Extra padding to prevent content from getting cut off at the bottom
+  },
+  card: {
+    backgroundColor: '#BBDEFB', // Light blue card background
+    borderRadius: 8,
+    padding: 20,
+  },
+  cardTitle: {
+    color: '#0D47A1', // Darker blue for card title
+    fontWeight: 'bold',
   },
   input: {
     marginBottom: 10,
+    backgroundColor: '#FFFFFF', // White background for input fields
   },
   button: {
     marginTop: 10,
+    backgroundColor: '#2196F3', // Primary light blue for buttons
   },
   message: {
     marginTop: 10,
-    color: '#28D46A',
+    color: '#D32F2F', // Red color for error messages
     textAlign: 'center',
   },
   picker: {
