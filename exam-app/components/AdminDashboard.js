@@ -3,7 +3,7 @@ import { View, FlatList, StyleSheet, Alert } from 'react-native';
 import { Button, Text, Appbar } from 'react-native-paper';
 import axios from 'axios';
 
-const AdminDashboard = () => {
+const AdminDashboard = ({ navigation }) => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
