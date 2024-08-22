@@ -13,31 +13,10 @@ const Login = ({ navigation }) => {
   const [userType, setUserType] = useState('student');
   const [isRegistering, setIsRegistering] = useState(false);
   const { setUser } = useContext(UserContext);
-  const [baseURL, setBaseURL] = useState('');
-
-  useEffect(() => {
-    const fetchExpoURL = () => {
-      let apiURL = '';
-
-      if (Constants.manifest && Constants.manifest.debuggerHost) {
-        const expoURL = Constants.manifest.debuggerHost.split(':')[0];
-        apiURL = `http://${expoURL}:5000`;
-      } else if (Constants.manifest2?.extra?.expoGo?.debuggerHost) {
-        const expoURL = Constants.manifest2.extra.expoGo.debuggerHost.split(':')[0];
-        apiURL = `http://${expoURL}:5000`;
-      } else {
-        apiURL = 'http://localhost:5000';
-      }
-
-      setBaseURL(apiURL);
-    };
-
-    fetchExpoURL();
-  }, []);
 
   const handleRegister = async () => {
     try {
-      const response = await axios.post(`${baseURL}/register`, {
+      const response = await axios.post(`http://192.168.1.203:5000/register`, {
         name,
         password,
         user_type: userType
@@ -59,7 +38,7 @@ const Login = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post(`${baseURL}/login`, { name, password });
+      const response = await axios.post(`http://192.168.1.203:5000/login`, { name, password });
       setUser({
         name: response.data.user.name,
         userType: response.data.user.user_type,

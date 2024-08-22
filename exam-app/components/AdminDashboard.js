@@ -2,44 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, Alert } from 'react-native';
 import { Button, Text, Appbar } from 'react-native-paper';
 import axios from 'axios';
-import Constants from 'expo-constants';
 
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
-  const [baseURL, setBaseURL] = useState('');
 
   useEffect(() => {
-    const fetchExpoURL = () => {
-      let apiURL = '';
-
-      if (Constants.manifest && Constants.manifest.debuggerHost) {
-        // Extract IP from the debuggerHost (development mode)
-        const expoURL = Constants.manifest.debuggerHost.split(':')[0];
-        apiURL = `http://${expoURL}:5000`;
-      } else if (Constants.manifest2?.extra?.expoGo?.debuggerHost) {
-        // Extract IP from the debuggerHost (new manifest version)
-        const expoURL = Constants.manifest2.extra.expoGo.debuggerHost.split(':')[0];
-        apiURL = `http://${expoURL}:5000`;
-      } else {
-        // Fallback IP address for production or undefined scenarios
-        apiURL = 'http://localhost:5000';
-      }
-
-      setBaseURL(apiURL);
-    };
-
-    fetchExpoURL();
+    fetchUsers();
   }, []);
-
-  useEffect(() => {
-    if (baseURL) {
-      fetchUsers();
-    }
-  }, [baseURL]);
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get(`${baseURL}/users`);
+      const response = await axios.get(`http://192.168.1.203:5000/users`);
       setUsers(response.data);
     } catch (error) {
       console.error(error);
@@ -48,7 +21,7 @@ const AdminDashboard = () => {
 
   const suspendUser = async (userId) => {
     try {
-      await axios.put(`${baseURL}/users/${userId}/suspend`);
+      await axios.put(`http://192.168.1.203:5000/users/${userId}/suspend`);
       Alert.alert('Success', 'User account suspended');
       fetchUsers();
     } catch (error) {
@@ -59,7 +32,7 @@ const AdminDashboard = () => {
 
   const unsuspendUser = async (userId) => {
     try {
-      await axios.put(`${baseURL}/users/${userId}/unsuspend`);
+      await axios.put(`http://192.168.1.203:5000/users/${userId}/unsuspend`);
       Alert.alert('Success', 'User account unsuspended');
       fetchUsers();
     } catch (error) {

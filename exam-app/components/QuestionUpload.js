@@ -15,43 +15,19 @@ const QuestionUpload = ({ navigation }) => {
   const [choices, setChoices] = useState([{ text: '', is_correct: false }]);
   const [correctAnswer, setCorrectAnswer] = useState('');
   const [message, setMessage] = useState('');
-  const [baseURL, setBaseURL] = useState('');
 
   useEffect(() => {
-    const fetchExpoURL = () => {
-      let apiURL = '';
-
-      if (Constants.manifest && Constants.manifest.debuggerHost) {
-        const expoURL = Constants.manifest.debuggerHost.split(':')[0];
-        apiURL = `http://${expoURL}:5000`;
-      } else if (Constants.manifest2?.extra?.expoGo?.debuggerHost) {
-        const expoURL = Constants.manifest2.extra.expoGo.debuggerHost.split(':')[0];
-        apiURL = `http://${expoURL}:5000`;
-      } else {
-        apiURL = 'http://localhost:5000';
-      }
-
-      setBaseURL(apiURL);
+    // Fetch subjects from back end
+    const fetchSubjects = async () => {
+        try {
+            const response = await axios.get(`http://192.168.1.203:5000/subjects`);
+            setSubjects(response.data);
+        } catch (error) {
+            console.error('Error fetching subjects', error);
+        }
     };
-
-    fetchExpoURL();
+    fetchSubjects();
   }, []);
-
-  useEffect(() => {
-    if (baseURL)
-    {
-        // Fetch subjects from back end
-        const fetchSubjects = async () => {
-            try {
-                const response = await axios.get(`${baseURL}/subjects`);
-                setSubjects(response.data);
-            } catch (error) {
-                console.error('Error fetching subjects', error);
-            }
-        };
-        fetchSubjects();
-    }
-  }, [baseURL]);
 
   const handleChoiceChange = (index, text) => {
     const newChoices = [...choices];
@@ -74,7 +50,7 @@ const QuestionUpload = ({ navigation }) => {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post(`${baseURL}/questions`, {
+      const response = await axios.post(`http://192.168.1.203:5000/questions`, {
         content,
         difficulty,
         chapter,
@@ -112,7 +88,7 @@ const QuestionUpload = ({ navigation }) => {
         });
 
         // Upload the file
-        const response = await axios.post(`${baseURL}/upload_csv`, formData, {
+        const response = await axios.post(`http://192.168.1.203:5000/upload_csv`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
