@@ -128,10 +128,12 @@ const TestCreation = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Create Test" />
-      </Appbar.Header>
+      <View style={styles.headerWrapper}>
+        <Appbar.Header>
+            <Appbar.BackAction onPress={() => navigation.goBack()} />
+            <Appbar.Content title="Create Test" />
+        </Appbar.Header>
+      </View>
       <SectionList
         sections={[
           { title: 'Student Search Results', data: studentResults },
@@ -177,6 +179,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8F9FA',
     padding: 16,
+  },
+  headerWrapper: {
+    marginHorizontal: -16,
+    marginVertical: -16,
+    marginBottom: 16,
   },
   headerContainer: {
     marginBottom: 16,
