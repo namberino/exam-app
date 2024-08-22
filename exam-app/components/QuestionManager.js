@@ -194,13 +194,13 @@ const QuestionManager = ({ navigation }) => {
               <Card.Actions>
                 <IconButton
                   icon="pencil"
-                  color="#0D47A1"
+                  style={styles.editButton}
                   size={24}
                   onPress={() => openEditModal(item)}
                 />
                 <IconButton
                   icon="delete"
-                  color="#FF5252"
+                  style={styles.deleteButton}
                   size={24}
                   onPress={() => handleDeleteQuestion(item._id)}
                 />
@@ -373,6 +373,12 @@ const styles = StyleSheet.create({
   cancelButton: {
     marginTop: 10,
     backgroundColor: '#1976D2',
+  },
+  editButton: {
+    backgroundColor: '#64B5F6', // Lighter blue for edit button
+  },
+  deleteButton: {
+    backgroundColor: '#FF8A90', // Light red for delete button
   },
 //   pickerWrapper: {
 //     borderWidth: 1,
