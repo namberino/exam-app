@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { TextInput, Button, Text, Appbar, Card } from 'react-native-paper';
+import { TextInput, Button, Text, Card } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { UserContext } from './UserContext';
@@ -97,9 +97,14 @@ const Login = ({ navigation }) => {
                 </Button>
               </>
             ) : (
-              <Button mode="contained" onPress={handleRegister} style={styles.button}>
-                Create Account
-              </Button>
+              <>
+                <Button mode="contained" onPress={handleRegister} style={styles.button}>
+                  Create Account
+                </Button>
+                <Button mode="outlined" onPress={() => setIsRegistering(false)} style={styles.button}>
+                  Back to Login
+                </Button>
+              </>
             )}
           </Card.Content>
         </Card>
@@ -114,13 +119,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
-  },
-  appbar: {
-    backgroundColor: '#2196F3', // Primary light blue
-  },
-  appbarTitle: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
   },
   content: {
     paddingTop: 50,
