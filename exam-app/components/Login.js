@@ -92,7 +92,7 @@ const Login = ({ navigation }) => {
                 <Button mode="contained" onPress={handleLogin} style={styles.button}>
                   Login
                 </Button>
-                <Button mode="outlined" onPress={() => setIsRegistering(true)} style={styles.button}>
+                <Button mode="contained" onPress={() => setIsRegistering(true)} style={styles.button}>
                   Register
                 </Button>
               </>
@@ -101,7 +101,7 @@ const Login = ({ navigation }) => {
                 <Button mode="contained" onPress={handleRegister} style={styles.button}>
                   Create Account
                 </Button>
-                <Button mode="outlined" onPress={() => setIsRegistering(false)} style={styles.button}>
+                <Button mode="contained" onPress={() => setIsRegistering(false)} style={styles.button}>
                   Back to Login
                 </Button>
               </>

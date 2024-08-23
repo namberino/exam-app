@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Appbar, Button, IconButton } from 'react-native-paper';
-import { UserContext } from './UserContext';
+import { UserContext } from '../context/UserContext';
 
 const TestResult = ({ route, navigation }) => {
   const { score, correctAnswers, totalQuestions } = route.params;

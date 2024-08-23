@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { UserProvider, UserContext } from './components/UserContext';
+import { UserProvider, UserContext } from './context/UserContext';
 import Login from './components/Login';
 import QuestionUpload from './components/QuestionUpload';
 import TestCreation from './components/TestCreation';

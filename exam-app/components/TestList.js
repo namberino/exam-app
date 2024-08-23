@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { Text, Card, Appbar, IconButton } from 'react-native-paper';
 import axios from 'axios';
-import { UserContext } from './UserContext';
+import { UserContext } from '../context/UserContext';
 
 const TestList = ({ navigation }) => {
   const { user } = useContext(UserContext);

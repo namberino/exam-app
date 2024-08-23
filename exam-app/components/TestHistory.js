@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 import { Text, Appbar, Card, ActivityIndicator, IconButton } from 'react-native-paper';
-import { UserContext } from './UserContext';
+import { UserContext } from '../context/UserContext';
 import axios from 'axios';
 
 const TestHistory = ({ navigation }) => {

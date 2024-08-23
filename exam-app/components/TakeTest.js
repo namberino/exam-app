@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { Text, Button, Appbar, IconButton } from 'react-native-paper';
 import axios from 'axios';
-import { UserContext } from './UserContext';
+import { UserContext } from '../context/UserContext';
 
 const TakeTest = ({ route, navigation }) => {
   const { testId } = route.params;

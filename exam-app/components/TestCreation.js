@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, SectionList, TouchableOpacity, TextInput, FlatList } from 'react-native';
 import { Button, Text, Appbar, Card, IconButton, Modal, Portal, Provider } from 'react-native-paper';
 import axios from 'axios';
-import { UserContext } from './UserContext';
+import { UserContext } from '../context/UserContext';
 
 const TestCreation = ({ navigation }) => {
   const [questions, setQuestions] = useState([]);
