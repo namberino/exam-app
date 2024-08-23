@@ -76,7 +76,7 @@ const Login = ({ navigation }) => {
               mode="outlined"
             />
 
-            {isRegistering && (
+            {/* {isRegistering && (
               <Picker
                 selectedValue={userType}
                 onValueChange={(itemValue) => setUserType(itemValue)}
@@ -85,7 +85,7 @@ const Login = ({ navigation }) => {
                 <Picker.Item label="Student" value="student" />
                 <Picker.Item label="Teacher" value="teacher" />
               </Picker>
-            )}
+            )} */}
 
             {!isRegistering ? (
               <>
