@@ -9,6 +9,8 @@ const TakeTest = ({ route, navigation }) => {
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [message, setMessage] = useState('');
+  const [timeLeft, setTimeLeft] = useState();
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const { user } = useContext(UserContext);
   const user_id = user.userId;
 
@@ -17,6 +19,7 @@ const TakeTest = ({ route, navigation }) => {
       try {
         const response = await axios.get(`http://192.168.1.203:5000/tests/${testId}`);
         setQuestions(response.data.questions);
+        setTimeLeft(response.data.time_limit);
       } catch (error) {
         setMessage('Error fetching test questions');
       }
@@ -24,24 +27,36 @@ const TakeTest = ({ route, navigation }) => {
     fetchTest();
   }, [testId]);
 
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      submitTest(); // Auto-submit when time is up
+    }
+
+    const timerId = setInterval(() => {
+      setTimeLeft(prevTime => prevTime - 1);
+    }, 1000);
+
+    return () => clearInterval(timerId); // Cleanup timer on component unmount
+  }, [timeLeft]);
+
   const handleChoiceSelect = (questionId, choiceText) => {
-    setAnswers(prevAnswers => ({
-      ...prevAnswers,
-      [questionId]: choiceText
-    }));
+    if (!isSubmitted) {
+      setAnswers(prevAnswers => ({
+        ...prevAnswers,
+        [questionId]: choiceText
+      }));
+    }
   };
 
   const submitTest = async () => {
-    const unansweredQuestions = questions.filter(q => !answers[q._id]);
+    if (isSubmitted) return; // Prevent double submission
+    setIsSubmitted(true); // Lock submissions
 
-    if (unansweredQuestions.length > 0) {
-      Alert.alert(
-        'Incomplete',
-        `Please answer the following questions:\n${unansweredQuestions.map(q => q.content).join('\n')}`,
-        [{ text: 'OK' }]
-      );
-      return;
-    }
+    // Mark unanswered questions as wrong
+    const unansweredQuestions = questions.filter(q => !answers[q._id]);
+    unansweredQuestions.forEach((question) => {
+      answers[question._id] = ''; // or any placeholder value
+    });
 
     let correctAnswers = 0;
     questions.forEach((question) => {
@@ -70,6 +85,7 @@ const TakeTest = ({ route, navigation }) => {
           key={index}
           onPress={() => handleChoiceSelect(item._id, choice.text)}
           style={styles.choice}
+          disabled={isSubmitted} // Disable choices after submission
         >
           <Text style={answers[item._id] === choice.text ? styles.selectedChoice : styles.choiceText}>
             {choice.text}
@@ -82,7 +98,6 @@ const TakeTest = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Appbar.Header style={styles.appbar}>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Take Test" titleStyle={styles.appbarTitle} />
         <IconButton
           icon="help-circle"
@@ -91,13 +106,14 @@ const TakeTest = ({ route, navigation }) => {
         />
       </Appbar.Header>
       {message ? <Text style={styles.message}>{message}</Text> : null}
+      <Text style={styles.timer}>Time Left: {Math.floor(timeLeft / 60)}:{('0' + (timeLeft % 60)).slice(-2)}</Text>
       <FlatList
         data={questions}
         keyExtractor={(item) => item._id}
         renderItem={renderItem}
         contentContainerStyle={styles.list}
       />
-      <Button mode="contained" onPress={submitTest} style={styles.submitButton}>
+      <Button mode="contained" onPress={submitTest} style={styles.submitButton} disabled={isSubmitted}>
         Submit Test
       </Button>
     </View>
@@ -115,6 +131,12 @@ const styles = StyleSheet.create({
   appbarTitle: {
     color: '#FFFFFF',
     fontWeight: 'bold',
+  },
+  timer: {
+    fontSize: 20,
+    color: '#DC3545',
+    textAlign: 'center',
+    marginVertical: 10,
   },
   list: {
     padding: 16,

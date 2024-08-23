@@ -9,6 +9,7 @@ const TestCreation = ({ navigation }) => {
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [message, setMessage] = useState('');
   const [testName, setTestName] = useState('');
+  const [timeLimit, setTimeLimit] = useState(''); // State for time limit
   const [studentQuery, setStudentQuery] = useState('');
   const [studentResults, setStudentResults] = useState([]);
   const [assignedStudents, setAssignedStudents] = useState([]);
@@ -68,15 +69,23 @@ const TestCreation = ({ navigation }) => {
       return;
     }
 
+    // Validate time limit
+    if (!timeLimit.trim() || isNaN(timeLimit) || parseFloat(timeLimit) <= 0) {
+      setMessage('A valid time limit is required');
+      return;
+    }
+
     try {
       const response = await axios.post('http://192.168.1.203:5000/tests', {
         name: testName,
+        time_limit: parseInt(parseFloat(timeLimit) * 60), // Pass time limit to the database
         questions: selectedQuestions.map(q => q._id),
         user_id: user.userId,
         assigned_students: assignedStudents.map(s => s._id),
       });
       setMessage(response.data.message);
       setTestName('');
+      setTimeLimit(''); // Reset time limit
       setSelectedQuestions([]);
       setAssignedStudents([]);
     } catch (error) {
@@ -164,7 +173,14 @@ const TestCreation = ({ navigation }) => {
               onChangeText={setTestName}
               style={styles.input}
             />
-            <Text style={styles.sectionTitle}>Search for students:</Text>
+            <TextInput
+              placeholder="Enter time limit (in minutes)"
+              value={timeLimit}
+              onChangeText={setTimeLimit}
+              keyboardType="numeric" // Ensure numeric input
+              style={styles.input}
+            />
+            {/* <Text style={styles.sectionTitle}>Search for students:</Text> */}
             <TextInput
               placeholder="Search for students"
               value={studentQuery}
@@ -259,18 +275,19 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   button: {
-    marginTop: 16,
-    backgroundColor: '#007BFF',
+    marginVertical: 16,
+    backgroundColor: '#2196F3',
   },
   message: {
-    marginTop: 16,
-    color: '#ff5252',
     textAlign: 'center',
+    marginVertical: 8,
+    fontSize: 16,
+    color: '#dc3545', // Red color for error messages
   },
   noItemsText: {
+    textAlign: 'center',
+    color: '#666',
     fontSize: 14,
-    fontStyle: 'italic',
-    color: '#999',
   },
 });
 

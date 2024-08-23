@@ -107,6 +107,7 @@ def create_test():
         name = data.get('name', '')
         user_id = data.get('user_id')
         assigned_students = data['assigned_students']
+        time_limit = data.get('time_limit')
 
         # Convert question IDs from string to ObjectId
         formatted_question_ids = [ObjectId(q_id) for q_id in question_ids]
@@ -117,7 +118,8 @@ def create_test():
             'scores': {},
             'name': name,
             'assigned_students': assigned_student_ids,
-            'creator_id': ObjectId(user_id)
+            'creator_id': ObjectId(user_id),
+            'time_limit': time_limit
         }
         
         test_id = tests.insert_one(test).inserted_id
@@ -231,7 +233,7 @@ def get_test(test_id):
                 'name': student['name']
             })
 
-        return jsonify({'questions': question_list, 'assigned_students': student_list, 'scores': test.get('scores', {})})
+        return jsonify({'questions': question_list, 'assigned_students': student_list, 'scores': test.get('scores', {}), 'time_limit': test.get('time_limit', {})})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
