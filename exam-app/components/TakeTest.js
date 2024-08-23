@@ -48,6 +48,22 @@ const TakeTest = ({ route, navigation }) => {
     }
   };
 
+  const confirmSubmission = () => {
+    const unansweredQuestions = questions.filter(q => !answers[q._id]);
+    if (unansweredQuestions.length > 0) {
+      Alert.alert(
+        'Unanswered Questions',
+        'You have unanswered questions. Are you sure you want to submit the test?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Submit', onPress: submitTest },
+        ]
+      );
+    } else {
+      submitTest();
+    }
+  };
+
   const submitTest = async () => {
     if (isSubmitted) return; // Prevent double submission
     setIsSubmitted(true); // Lock submissions
@@ -113,7 +129,7 @@ const TakeTest = ({ route, navigation }) => {
         renderItem={renderItem}
         contentContainerStyle={styles.list}
       />
-      <Button mode="contained" onPress={submitTest} style={styles.submitButton} disabled={isSubmitted}>
+      <Button mode="contained" onPress={confirmSubmission} style={styles.submitButton} disabled={isSubmitted}>
         Submit Test
       </Button>
     </View>
