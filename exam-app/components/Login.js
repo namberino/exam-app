@@ -3,7 +3,7 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import { TextInput, Button, Text, Card } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
-import { UserContext } from './UserContext';
+import { UserContext } from '../context/UserContext';
 import { MaterialIcons } from '@expo/vector-icons';
 
 const Login = ({ navigation }) => {

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Card, Text, Appbar, Avatar } from 'react-native-paper';
-import { UserContext } from './UserContext';
+import { UserContext } from '../context/UserContext';
 import { MaterialIcons } from '@expo/vector-icons';
 
 function capitalizeFirstLetter(string) {
