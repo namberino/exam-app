@@ -124,6 +124,7 @@ const styles = StyleSheet.create({
   },
   userIcon: {
     marginRight: 16,
+    backgroundColor: '#AAAAAA'
   },
   content: {
     padding: 20,
