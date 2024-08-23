@@ -118,7 +118,7 @@ const TestList = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E3F2FD',
+    backgroundColor: '#F5F5F5',
     padding: 16,
   },
   appbar: {

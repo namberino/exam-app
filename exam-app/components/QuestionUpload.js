@@ -216,7 +216,7 @@ const QuestionUpload = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: '#E3F2FD', // Light blue background to match home page
+    backgroundColor: '#F5F5F5',
   },
   appbar: {
     backgroundColor: '#2196F3', // Dark blue to match home page
