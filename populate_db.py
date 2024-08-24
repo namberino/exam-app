@@ -1,20 +1,19 @@
 import bcrypt
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 
 # Connect to MongoDB
 client = MongoClient('mongodb://localhost:27017/')
-db = client.exam_app
+db = client.testing_db
 
 subjects = db.subjects
 subjects.insert_many([
-    [
-        {'name': 'Mathematics'},
-        {'name': 'Science'},
-        {'name': 'History'},
-        {'name': 'Geography'},
-        {'name': 'Physics'},
-        {'name': 'Biology'},
-    ]
+    {'name': 'Mathematics'},
+    {'name': 'Science'},
+    {'name': 'History'},
+    {'name': 'Geography'},
+    {'name': 'Physics'},
+    {'name': 'Biology'}
 ])
 
 # Create users collection and insert example data
@@ -156,7 +155,7 @@ questions.insert_many([
         { 'text': 'Berlin', 'is_correct': False }
         ],
         'correct_answer': 'Paris',
-        'subject_id': ObjectId(subjects.find_one({''name'': 'Geography'}))
+        'subject_id': ObjectId(subjects.find_one({'name': 'Geography'})['_id'])
     },
     {
         'content': 'Solve for x: 2x + 3 = 7',
@@ -169,7 +168,7 @@ questions.insert_many([
         { 'text': '4', 'is_correct': False }
         ],
         'correct_answer': '2',
-        'subject_id': ObjectId(subjects.find_one({''name'': 'Mathematics'}))
+        'subject_id': ObjectId(subjects.find_one({'name': 'Mathematics'})['_id'])
     },
     {
         'content': "What is the Collatz's conjecture equation?",
@@ -182,7 +181,7 @@ questions.insert_many([
         { 'text': '2x+1', 'is_correct': False }
         ],
         'correct_answer': '3x+1',
-        'subject_id': ObjectId(subjects.find_one({''name'': 'Mathematics'}))
+        'subject_id': ObjectId(subjects.find_one({'name': 'Mathematics'})['_id'])
     },
     {
         'content': 'What is a derivative?',
@@ -195,7 +194,7 @@ questions.insert_many([
         { 'text': 'Rate of rate of change', 'is_correct': False }
         ],
         'correct_answer': 'Rate of change',
-        'subject_id': ObjectId(subjects.find_one({''name'': 'Mathematics'}))
+        'subject_id': ObjectId(subjects.find_one({'name': 'Mathematics'})['_id'])
     },
     {
         'content': "What's the derivative of (x+1) sin x?",
@@ -208,7 +207,7 @@ questions.insert_many([
         { 'text': '(x+2) cos x', 'is_correct': False }
         ],
         'correct_answer': 'sin x + (x+1) cos x',
-        'subject_id': ObjectId(subjects.find_one({''name'': 'Mathematics'}))
+        'subject_id': ObjectId(subjects.find_one({'name': 'Mathematics'})['_id'])
     },
     {
         'content': "Where's Brazil?",
@@ -221,7 +220,7 @@ questions.insert_many([
         { 'is_correct': False, 'text': 'USA' }
         ],
         'correct_answer': 'North America',
-        'subject_id': ObjectId(subjects.find_one({''name'': 'Geography'}))
+        'subject_id': ObjectId(subjects.find_one({'name': 'Geography'})['_id'])
     },
     {
         'content': 'What continent contains New Zealand?',
@@ -234,7 +233,7 @@ questions.insert_many([
         { 'text': 'Africa', 'is_correct': False }
         ],
         'correct_answer': 'Oceania',
-        'subject_id': ObjectId(subjects.find_one({''name'': 'Geography'}))
+        'subject_id': ObjectId(subjects.find_one({'name': 'Geography'})['_id'])
     },
     {
         'content': 'What is the capital of Japan?',
@@ -247,7 +246,7 @@ questions.insert_many([
         { 'is_correct': False, 'text': 'Nagoya' }
         ],
         'correct_answer': 'Tokyo',
-        'subject_id': ObjectId(subjects.find_one({''name'': 'Geography'}))
+        'subject_id': ObjectId(subjects.find_one({'name': 'Geography'})['_id'])
     },
     {
         'content': 'What is the acceleration due to gravity on Earth?',
@@ -260,7 +259,7 @@ questions.insert_many([
         { 'is_correct': False, 'text': '9.2 m/s²' }
         ],
         'correct_answer': '9.8 m/s²',
-        'subject_id': ObjectId(subjects.find_one({''name'': 'Physics'}))
+        'subject_id': ObjectId(subjects.find_one({'name': 'Physics'})['_id'])
     },
     {
         'content': 'Who was the first President of the United States?',
@@ -273,7 +272,7 @@ questions.insert_many([
         { 'is_correct': False, 'text': 'John Adams' }
         ],
         'correct_answer': 'George Washington',
-        'subject_id': ObjectId(subjects.find_one({''name'': 'History'}))
+        'subject_id': ObjectId(subjects.find_one({'name': 'History'})['_id'])
     },
     {
         'content': 'What is the formula for calculating kinetic energy?',
@@ -286,7 +285,7 @@ questions.insert_many([
         { 'is_correct': False, 'text': 'F=ma' }
         ],
         'correct_answer': '½mv²',
-        'subject_id': ObjectId(subjects.find_one({''name'': 'Physics'}))
+        'subject_id': ObjectId(subjects.find_one({'name': 'Physics'})['_id'])
     },
     {
         'content': 'What is the main cause of World War I?',
@@ -302,7 +301,7 @@ questions.insert_many([
         { 'is_correct': False, 'text': 'The Cold War' }
         ],
         'correct_answer': 'Assassination of Archduke Franz Ferdinand',
-        'subject_id': ObjectId(subjects.find_one({''name'': 'History'}))
+        'subject_id': ObjectId(subjects.find_one({'name': 'History'})['_id'])
     },
     {
         'content': 'What is the genetic material in humans?',
@@ -315,7 +314,7 @@ questions.insert_many([
         { 'is_correct': False, 'text': 'Lipids' }
         ],
         'correct_answer': 'DNA',
-        'subject_id': ObjectId(subjects.find_one({''name'': 'Biology'}))
+        'subject_id': ObjectId(subjects.find_one({'name': 'Biology'})['_id'])
     },
     {
         'content': 'What is the speed of light?',
@@ -328,7 +327,7 @@ questions.insert_many([
         { 'is_correct': False, 'text': '299,792,458 km/s' }
         ],
         'correct_answer': '299,792,458 m/s',
-        'subject_id': ObjectId(subjects.find_one({''name'': 'Physics'}))
+        'subject_id': ObjectId(subjects.find_one({'name': 'Physics'})['_id'])
     },
     {
         'content': 'What is the function of the mitochondria?',
@@ -341,7 +340,7 @@ questions.insert_many([
         { 'is_correct': False, 'text': 'Photosynthesis' }
         ],
         'correct_answer': 'Powerhouse of the cell',
-        'subject_id': ObjectId(subjects.find_one({''name'': 'Biology'}))
+        'subject_id': ObjectId(subjects.find_one({'name': 'Biology'})['_id'])
     },
     {
         'content': 'Who proposed the theory of evolution by natural selection?',
@@ -354,7 +353,7 @@ questions.insert_many([
         { 'is_correct': False, 'text': 'Albert Einstein' }
         ],
         'correct_answer': 'Charles Darwin',
-        'subject_id': ObjectId(subjects.find_one({''name'': 'Biology'}))
+        'subject_id': ObjectId(subjects.find_one({'name': 'Biology'})['_id'])
     },
     {
         'content': 'What is the capital of Canada?',
@@ -367,7 +366,7 @@ questions.insert_many([
         { 'is_correct': False, 'text': 'Montreal' }
         ],
         'correct_answer': 'Ottawa',
-        'subject_id': ObjectId(subjects.find_one({''name'': 'Geography'}))
+        'subject_id': ObjectId(subjects.find_one({'name': 'Geography'})['_id'])
     },
     {
         'content': 'What is the boiling point of water?',
@@ -380,7 +379,7 @@ questions.insert_many([
         { 'is_correct': False, 'text': '373.15 K' }
         ],
         'correct_answer': '100°C',
-        'subject_id': ObjectId(subjects.find_one({''name'': 'Physics'}))
+        'subject_id': ObjectId(subjects.find_one({'name': 'Physics'})['_id'])
     },
     {
         'content': 'What was the main purpose of the Silk Road?',
@@ -393,7 +392,7 @@ questions.insert_many([
         { 'is_correct': False, 'text': 'Exploration of new lands' }
         ],
         'correct_answer': 'Trade between Asia and Europe',
-        'subject_id': ObjectId(subjects.find_one({''name'': 'History'}))
+        'subject_id': ObjectId(subjects.find_one({'name': 'History'})['_id'])
     },
     {
         'content': 'What process do plants use to convert sunlight into energy?',
@@ -406,115 +405,115 @@ questions.insert_many([
         { 'is_correct': False, 'text': 'Transpiration' }
         ],
         'correct_answer': 'Photosynthesis',
-        'subject_id': ObjectId(subjects.find_one({''name'': 'Biology'}))
+        'subject_id': ObjectId(subjects.find_one({'name': 'Biology'})['_id'])
     }
 ])
 
 tests = db.tests
 tests.insert_many([
     {
-        questions: [
+        'questions': [
             ObjectId(questions.find_one({'content': 'Solve for x: 2x + 3 = 7'})['_id']),
             ObjectId(questions.find_one({'content': "What is the Collatz's conjecture equation?"})['_id']),
             ObjectId(questions.find_one({'content': 'What is a derivative?'})['_id']),
             ObjectId(questions.find_one({'content': "What's the derivative of (x+1) sin x?"})['_id'])
         ],
-        scores: {
-            users.find_one({'name': 'Tony'}): 100,
-            users.find_one({'name': 'Nick'}): 100,
-            users.find_one({'name': 'Hank'}): 50,
-            users.find_one({'name': 'Mia'}): 75,
-            users.find_one({'name': 'Alice'}): 25
+        'scores': {
+            str(users.find_one({'name': 'Tony'})['_id']): 100,
+            str(users.find_one({'name': 'Nick'})['_id']): 100,
+            str(users.find_one({'name': 'Hank'})['_id']): 50,
+            str(users.find_one({'name': 'Mia'})['_id']): 75,
+            str(users.find_one({'name': 'Alice'})['_id']): 25
         },
-        name: 'Math 1',
-        assigned_students: [
+        'name': 'Math 1',
+        'assigned_students': [
             ObjectId(users.find_one({'name': 'Tony'})['_id']),
             ObjectId(users.find_one({'name': 'Nick'})['_id']),
             ObjectId(users.find_one({'name': 'Hank'})['_id']),
             ObjectId(users.find_one({'name': 'Mia'})['_id']),
             ObjectId(users.find_one({'name': 'Alice'})['_id'])
         ],
-        creator_id: ObjectId(users.find_one({'name': 'Steve'})['_id']),
-        time_limit: 60
+        'creator_id': ObjectId(users.find_one({'name': 'Steve'})['_id']),
+        'time_limit': 60
     },
     {
-        questions: [
+        'questions': [
             ObjectId(questions.find_one({'content': 'What is the acceleration due to gravity on Earth?'})['_id']),
             ObjectId(questions.find_one({'content': 'What is the formula for calculating kinetic energy?'})['_id']),
             ObjectId(questions.find_one({'content': 'What is the speed of light?'})['_id']),
             ObjectId(questions.find_one({'content': 'What is the boiling point of water?'})['_id'])
         ],
-        scores: {
-            users.find_one({'name': 'Tony'}): 75,
-            users.find_one({'name': 'Nick'}): 75,
-            users.find_one({'name': 'Hank'}): 100,
-            users.find_one({'name': 'Mia'}): 25,
-            users.find_one({'name': 'Alice'}): 50
+        'scores': {
+            str(users.find_one({'name': 'Tony'})['_id']): 75,
+            str(users.find_one({'name': 'Nick'})['_id']): 75,
+            str(users.find_one({'name': 'Hank'})['_id']): 100,
+            str(users.find_one({'name': 'Mia'})['_id']): 25,
+            str(users.find_one({'name': 'Alice'})['_id']): 50
         },
-        name: 'Physics 1',
-        assigned_students: [
+        'name': 'Physics 1',
+        'assigned_students': [
             ObjectId(users.find_one({'name': 'Tony'})['_id']),
             ObjectId(users.find_one({'name': 'Nick'})['_id']),
             ObjectId(users.find_one({'name': 'Hank'})['_id']),
             ObjectId(users.find_one({'name': 'Mia'})['_id']),
             ObjectId(users.find_one({'name': 'Alice'})['_id'])
         ],
-        creator_id: ObjectId(users.find_one({'name': 'Steve'})['_id']),
-        time_limit: 120
+        'creator_id': ObjectId(users.find_one({'name': 'Steve'})['_id']),
+        'time_limit': 120
     }
 ])
 
 test_history = db.test_history
 test_history.insert_many([
     {
-        user_id: ObjectId(users.find_one({'name': 'Nick'})['_id']),
-        test_id: ObjectId(tests.find_one({'name': 'Math 1'})['_id']),
-        score: 100
+        'user_id': ObjectId(users.find_one({'name': 'Nick'})['_id']),
+        'test_id': ObjectId(tests.find_one({'name': 'Math 1'})['_id']),
+        'score': 100
     },
     {
-        user_id: ObjectId(users.find_one({'name': 'Tony'})['_id']),
-        test_id: ObjectId(tests.find_one({'name': 'Math 1'})['_id']),
-        score: 100
+        'user_id': ObjectId(users.find_one({'name': 'Tony'})['_id']),
+        'test_id': ObjectId(tests.find_one({'name': 'Math 1'})['_id']),
+        'score': 100
     },
     {
-        user_id: ObjectId(users.find_one({'name': 'Alice'})['_id']),
-        test_id: ObjectId(tests.find_one({'name': 'Math 1'})['_id']),
-        score: 50
+        'user_id': ObjectId(users.find_one({'name': 'Alice'})['_id']),
+        'test_id': ObjectId(tests.find_one({'name': 'Math 1'})['_id']),
+        'score': 50
     },
     {
-        user_id: ObjectId(users.find_one({'name': 'Hank'})['_id']),
-        test_id: ObjectId(tests.find_one({'name': 'Math 1'})['_id']),
-        score: 75
+        'user_id': ObjectId(users.find_one({'name': 'Hank'})['_id']),
+        'test_id': ObjectId(tests.find_one({'name': 'Math 1'})['_id']),
+        'score': 75
     },
     {
-        user_id: ObjectId(users.find_one({'name': 'Mia'})['_id']),
-        test_id: ObjectId(tests.find_one({'name': 'Math 1'})['_id']),
-        score: 25
+        'user_id': ObjectId(users.find_one({'name': 'Mia'})['_id']),
+        'test_id': ObjectId(tests.find_one({'name': 'Math 1'})['_id']),
+        'score': 25
     },
     {
-        user_id: ObjectId(users.find_one({'name': 'Nick'})['_id']),
-        test_id: ObjectId(tests.find_one({'name': 'Physics 1'})['_id']),
-        score: 75
+        'user_id': ObjectId(users.find_one({'name': 'Nick'})['_id']),
+        'test_id': ObjectId(tests.find_one({'name': 'Physics 1'})['_id']),
+        'score': 75
     },
     {
-        user_id: ObjectId(users.find_one({'name': 'Tony'})['_id']),
-        test_id: ObjectId(tests.find_one({'name': 'Physics 1'})['_id']),
-        score: 75
+        'user_id': ObjectId(users.find_one({'name': 'Tony'})['_id']),
+        'test_id': ObjectId(tests.find_one({'name': 'Physics 1'})['_id']),
+        'score': 75
     },
     {
-        user_id: ObjectId(users.find_one({'name': 'Alice'})['_id']),
-        test_id: ObjectId(tests.find_one({'name': 'Physics 1'})['_id']),
-        score: 100
+        'user_id': ObjectId(users.find_one({'name': 'Alice'})['_id']),
+        'test_id': ObjectId(tests.find_one({'name': 'Physics 1'})['_id']),
+        'score': 100
     },
     {
-        user_id: ObjectId(users.find_one({'name': 'Hank'})['_id']),
-        test_id: ObjectId(tests.find_one({'name': 'Physics 1'})['_id']),
-        score: 25
+        'user_id': ObjectId(users.find_one({'name': 'Hank'})['_id']),
+        'test_id': ObjectId(tests.find_one({'name': 'Physics 1'})['_id']),
+        'score': 25
     },
     {
-        user_id: ObjectId(users.find_one({'name': 'Mia'})['_id']),
-        test_id: ObjectId(tests.find_one({'name': 'Physics 1'})['_id']),
-        score: 50
+        'user_id': ObjectId(users.find_one({'name': 'Mia'})['_id']),
+        'test_id': ObjectId(tests.find_one({'name': 'Physics 1'})['_id']),
+        'score': 50
     }
 ])
 
