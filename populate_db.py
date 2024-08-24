@@ -413,11 +413,108 @@ questions.insert_many([
 tests = db.tests
 tests.insert_many([
     {
-        'questions': [
-            questions.find_one({''content'': 'What is the capital of France?'})['_id'],
-            questions.find_one({''content'': 'Solve for x: 2x + 3 = 7'})['_id']
+        questions: [
+            ObjectId(questions.find_one({'content': 'Solve for x: 2x + 3 = 7'})['_id']),
+            ObjectId(questions.find_one({'content': "What is the Collatz's conjecture equation?"})['_id']),
+            ObjectId(questions.find_one({'content': 'What is a derivative?'})['_id']),
+            ObjectId(questions.find_one({'content': "What's the derivative of (x+1) sin x?"})['_id'])
         ],
-        'scores': {}
+        scores: {
+            users.find_one({'name': 'Tony'}): 100,
+            users.find_one({'name': 'Nick'}): 100,
+            users.find_one({'name': 'Hank'}): 50,
+            users.find_one({'name': 'Mia'}): 75,
+            users.find_one({'name': 'Alice'}): 25
+        },
+        name: 'Math 1',
+        assigned_students: [
+            ObjectId(users.find_one({'name': 'Tony'})['_id']),
+            ObjectId(users.find_one({'name': 'Nick'})['_id']),
+            ObjectId(users.find_one({'name': 'Hank'})['_id']),
+            ObjectId(users.find_one({'name': 'Mia'})['_id']),
+            ObjectId(users.find_one({'name': 'Alice'})['_id'])
+        ],
+        creator_id: ObjectId(users.find_one({'name': 'Steve'})['_id']),
+        time_limit: 60
+    },
+    {
+        questions: [
+            ObjectId(questions.find_one({'content': 'What is the acceleration due to gravity on Earth?'})['_id']),
+            ObjectId(questions.find_one({'content': 'What is the formula for calculating kinetic energy?'})['_id']),
+            ObjectId(questions.find_one({'content': 'What is the speed of light?'})['_id']),
+            ObjectId(questions.find_one({'content': 'What is the boiling point of water?'})['_id'])
+        ],
+        scores: {
+            users.find_one({'name': 'Tony'}): 75,
+            users.find_one({'name': 'Nick'}): 75,
+            users.find_one({'name': 'Hank'}): 100,
+            users.find_one({'name': 'Mia'}): 25,
+            users.find_one({'name': 'Alice'}): 50
+        },
+        name: 'Physics 1',
+        assigned_students: [
+            ObjectId(users.find_one({'name': 'Tony'})['_id']),
+            ObjectId(users.find_one({'name': 'Nick'})['_id']),
+            ObjectId(users.find_one({'name': 'Hank'})['_id']),
+            ObjectId(users.find_one({'name': 'Mia'})['_id']),
+            ObjectId(users.find_one({'name': 'Alice'})['_id'])
+        ],
+        creator_id: ObjectId(users.find_one({'name': 'Steve'})['_id']),
+        time_limit: 120
+    }
+])
+
+test_history = db.test_history
+test_history.insert_many([
+    {
+        user_id: ObjectId(users.find_one({'name': 'Nick'})['_id']),
+        test_id: ObjectId(tests.find_one({'name': 'Math 1'})['_id']),
+        score: 100
+    },
+    {
+        user_id: ObjectId(users.find_one({'name': 'Tony'})['_id']),
+        test_id: ObjectId(tests.find_one({'name': 'Math 1'})['_id']),
+        score: 100
+    },
+    {
+        user_id: ObjectId(users.find_one({'name': 'Alice'})['_id']),
+        test_id: ObjectId(tests.find_one({'name': 'Math 1'})['_id']),
+        score: 50
+    },
+    {
+        user_id: ObjectId(users.find_one({'name': 'Hank'})['_id']),
+        test_id: ObjectId(tests.find_one({'name': 'Math 1'})['_id']),
+        score: 75
+    },
+    {
+        user_id: ObjectId(users.find_one({'name': 'Mia'})['_id']),
+        test_id: ObjectId(tests.find_one({'name': 'Math 1'})['_id']),
+        score: 25
+    },
+    {
+        user_id: ObjectId(users.find_one({'name': 'Nick'})['_id']),
+        test_id: ObjectId(tests.find_one({'name': 'Physics 1'})['_id']),
+        score: 75
+    },
+    {
+        user_id: ObjectId(users.find_one({'name': 'Tony'})['_id']),
+        test_id: ObjectId(tests.find_one({'name': 'Physics 1'})['_id']),
+        score: 75
+    },
+    {
+        user_id: ObjectId(users.find_one({'name': 'Alice'})['_id']),
+        test_id: ObjectId(tests.find_one({'name': 'Physics 1'})['_id']),
+        score: 100
+    },
+    {
+        user_id: ObjectId(users.find_one({'name': 'Hank'})['_id']),
+        test_id: ObjectId(tests.find_one({'name': 'Physics 1'})['_id']),
+        score: 25
+    },
+    {
+        user_id: ObjectId(users.find_one({'name': 'Mia'})['_id']),
+        test_id: ObjectId(tests.find_one({'name': 'Physics 1'})['_id']),
+        score: 50
     }
 ])
 
