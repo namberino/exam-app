@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, SectionList, TouchableOpacity, TextInput, FlatList } from 'react-native';
 import { Button, Text, Appbar, Card, IconButton, Modal, Portal, Provider } from 'react-native-paper';
 import axios from 'axios';
+import { Picker } from '@react-native-picker/picker';
 import { UserContext } from '../context/UserContext';
 
 const TestCreation = ({ navigation }) => {
@@ -14,7 +15,14 @@ const TestCreation = ({ navigation }) => {
   const [studentResults, setStudentResults] = useState([]);
   const [assignedStudents, setAssignedStudents] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [formVisible, setFormVisible] = useState(true); // State to control form visibility
+  const [formVisible, setFormVisible] = useState(true);
+  const [filterVisible, setFilterVisible] = useState(false); // State to control filter visibility
+  const [subjects, setSubjects] = useState([]);
+  const [chapters, setChapters] = useState([]);
+  const [difficultyLevels, setDifficultyLevels] = useState([]);
+  const [selectedSubject, setSelectedSubject] = useState('');
+  const [selectedChapter, setSelectedChapter] = useState('');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('');
   const { user } = useContext(UserContext);
 
   useEffect(() => {
@@ -22,6 +30,13 @@ const TestCreation = ({ navigation }) => {
       try {
         const response = await axios.get('http://192.168.1.203:5000/questions');
         setQuestions(response.data);
+        // Extract unique subjects, chapters, and difficulties from questions
+        const uniqueSubjects = [...new Set(response.data.map(q => q.subject))];
+        const uniqueChapters = [...new Set(response.data.map(q => q.chapter))];
+        const uniqueDifficulties = [...new Set(response.data.map(q => q.difficulty))];
+        setSubjects(uniqueSubjects);
+        setChapters(uniqueChapters);
+        setDifficultyLevels(uniqueDifficulties);
       } catch (error) {
         setMessage('Error fetching questions');
       }
@@ -96,6 +111,26 @@ const TestCreation = ({ navigation }) => {
     </TouchableOpacity>
   );
 
+  const filterQuestions = () => {
+    let filteredQuestions = questions;
+    if (selectedSubject) {
+      filteredQuestions = filteredQuestions.filter(q => q.subject === selectedSubject);
+    }
+    if (selectedChapter) {
+      filteredQuestions = filteredQuestions.filter(q => q.chapter === selectedChapter);
+    }
+    if (selectedDifficulty) {
+      filteredQuestions = filteredQuestions.filter(q => q.difficulty === selectedDifficulty);
+    }
+    return filteredQuestions;
+  };
+
+  const clearFilters = () => {
+    setSelectedSubject('');
+    setSelectedChapter('');
+    setSelectedDifficulty('');
+  };
+
   return (
     <Provider>
       <View style={styles.container}>
@@ -103,10 +138,16 @@ const TestCreation = ({ navigation }) => {
           <Appbar.BackAction onPress={() => navigation.goBack()} />
           <Appbar.Content title="Create Test" titleStyle={styles.appbarTitle} />
           <IconButton
-            icon={formVisible ? "eye-off" : "eye"} // Toggle icon based on form visibility
+            icon={formVisible ? "eye-off" : "eye"}
             color="#FFFFFF"
             size={24}
-            onPress={() => setFormVisible(!formVisible)} // Toggle form visibility
+            onPress={() => setFormVisible(!formVisible)}
+          />
+          <IconButton
+            icon={filterVisible ? "filter-remove-outline" : "filter"}
+            color="#FFFFFF"
+            size={24}
+            onPress={() => setFilterVisible(!filterVisible)}
           />
         </Appbar.Header>
 
@@ -154,8 +195,46 @@ const TestCreation = ({ navigation }) => {
           </View>
         )}
 
+        {filterVisible && (
+          <View style={styles.filterContainer}>
+            <Picker
+              selectedValue={selectedSubject}
+              onValueChange={(itemValue) => setSelectedSubject(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="Select Subject" value="" />
+              {subjects.map(subject => (
+                <Picker.Item key={subject} label={subject} value={subject} />
+              ))}
+            </Picker>
+            <Picker
+              selectedValue={selectedChapter}
+              onValueChange={(itemValue) => setSelectedChapter(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="Select Chapter" value="" />
+              {chapters.map(chapter => (
+                <Picker.Item key={chapter} label={chapter} value={chapter} />
+              ))}
+            </Picker>
+            <Picker
+              selectedValue={selectedDifficulty}
+              onValueChange={(itemValue) => setSelectedDifficulty(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="Select Difficulty" value="" />
+              {difficultyLevels.map(difficulty => (
+                <Picker.Item key={difficulty} label={difficulty} value={difficulty} />
+              ))}
+            </Picker>
+            <Button mode="contained" onPress={clearFilters} style={styles.button}>
+              Clear Filters
+            </Button>
+          </View>
+        )}
+
         <SectionList
-          sections={[{ title: 'Questions', data: questions }]}
+          sections={[{ title: 'Questions', data: filterQuestions() }]}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
             <TouchableOpacity
@@ -169,40 +248,40 @@ const TestCreation = ({ navigation }) => {
               <IconButton
                 icon={selectedQuestions.some(q => q._id === item._id) ? "check-circle" : "circle-outline"}
                 color={selectedQuestions.some(q => q._id === item._id) ? "#28A745" : "#007BFF"}
-                size={20}
+                size={24}
+                onPress={() => handleSelectQuestion(item)}
               />
             </TouchableOpacity>
           )}
           renderSectionHeader={({ section: { title } }) => (
-            <Text style={styles.sectionTitle}>{title}</Text>
+            <Text style={styles.sectionHeader}>{title}</Text>
           )}
-          style={styles.questionList}
+          style={styles.sectionList}
         />
 
-        <Button mode="contained" onPress={handleCreateTest} style={styles.createButton}>
+        <Button mode="contained" onPress={handleCreateTest} style={styles.button}>
           Create Test
         </Button>
-        {message ? <Text style={styles.message}>{message}</Text> : null}
+        {message && <Text style={styles.message}>{message}</Text>}
 
         <Portal>
           <Modal visible={modalVisible} onDismiss={() => setModalVisible(false)} contentContainerStyle={styles.modal}>
             <TextInput
               label="Search Students"
-              placeholder="Search for students"
+              placeholder="Enter student name or ID"
               value={studentQuery}
               onChangeText={setStudentQuery}
-              style={styles.input}
               onSubmitEditing={searchStudents}
+              style={styles.input}
             />
-            <FlatList
-              data={studentResults}
-              keyExtractor={(item) => item._id}
-              renderItem={renderStudentItem}
-              style={styles.studentSearchList}
-            />
-            <Button mode="contained" onPress={() => setModalVisible(false)} style={styles.closeButton}>
-              Close
-            </Button>
+            {studentResults.length > 0 && (
+              <FlatList
+                data={studentResults}
+                keyExtractor={(item) => item._id}
+                renderItem={renderStudentItem}
+                style={styles.studentList}
+              />
+            )}
           </Modal>
         </Portal>
       </View>
@@ -213,14 +292,13 @@ const TestCreation = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#f0f0f0',
   },
   appbar: {
     backgroundColor: '#2196F3',
   },
   appbarTitle: {
     color: '#FFFFFF',
-    fontWeight: 'bold',
   },
   form: {
     padding: 16,
@@ -232,98 +310,78 @@ const styles = StyleSheet.create({
     borderRadius: 25, // Rounded corners
     paddingHorizontal: 16,
     marginBottom: 16,
-    backgroundColor: '#F0F4F8', // Light background color for contrast
-    fontSize: 16,
-    color: '#333', // Darker text color for readability
-    shadowColor: '#000', // Subtle shadow for depth
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3, // Elevation for Android shadow
-  },
-  inputFocused: {
-    borderColor: '#0056b3', // Darker shade on focus
-  },
-  inputLabel: {
-    marginBottom: 8,
-    fontSize: 14,
-    color: '#555', // Muted label color
+    backgroundColor: '#FFFFFF',
   },
   button: {
     marginBottom: 16,
     backgroundColor: '#007BFF',
   },
   assignedStudentsList: {
-    marginBottom: 16,
+    marginTop: 16,
   },
   card: {
     marginBottom: 8,
-    backgroundColor: '#BBDEFB',
   },
   cardContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 12,
   },
-  questionList: {
-    flex: 1,
+  sectionList: {
+    margin: 16,
+  },
+  sectionHeader: {
+    fontWeight: 'bold',
+    fontSize: 18,
+    marginVertical: 8,
   },
   listItem: {
     padding: 12,
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    backgroundColor: '#E3F2FD',
+    borderBottomColor: '#DDDDDD',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   selectedItem: {
-    backgroundColor: '#e3f2fd',
+    backgroundColor: '#E3F2FD',
   },
   itemText: {
     fontSize: 16,
-    color: '#333',
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    backgroundColor: '#007BFF',
-    color: '#fff',
-  },
-  createButton: {
-    margin: 16,
-    backgroundColor: '#2196F3',
-  },
-  message: {
-    textAlign: 'center',
-    marginVertical: 8,
-    fontSize: 16,
-    color: '#dc3545',
+    flexShrink: 1,
   },
   modal: {
     backgroundColor: '#FFFFFF',
-    padding: 20,
-    marginHorizontal: 20,
+    padding: 16,
+    margin: 16,
     borderRadius: 8,
   },
-  closeButton: {
+  studentList: {
     marginTop: 16,
     backgroundColor: '#007BFF',
   },
   studentItem: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    padding: 12,
+    backgroundColor: '#FAFAFA',
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderBottomColor: '#DDDDDD',
   },
   studentText: {
     fontSize: 16,
   },
-  studentSearchList: {
-    maxHeight: 300,
+  message: {
+    color: '#FF0000',
+    textAlign: 'center',
+    marginVertical: 8,
+  },
+  filterContainer: {
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+    marginBottom: 16,
+  },
+  picker: {
+    marginBottom: 16,
   },
 });
 

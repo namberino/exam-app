@@ -97,6 +97,7 @@ def get_questions():
         subject = subjects.find_one({"_id": ObjectId(question['subject_id'])})
         question['subject_id'] = str(question['subject_id'])
         question['subject'] = subject['name'] if subject else None
+    print(result)
     return jsonify(result)
 
 @app.route('/tests', methods=['POST'])
@@ -172,7 +173,7 @@ def submit_test(test_id):
         )
 
         # Record the test submission in the test history
-        existing_record = False if test_history.find_one({'user_id': user_id, 'test_id': ObjectId(test_id)}) else True
+        existing_record = True if test_history.find_one({'user_id': user_id, 'test_id': ObjectId(test_id)}) else False
         print(existing_record)
 
         if existing_record:
@@ -240,7 +241,7 @@ def get_test(test_id):
 @app.route('/search_students', methods=['GET'])
 def search_students():
     query = request.args.get('query')
-    students = db.users.find({'name': {'$regex': query, '$options': 'i'}, 'user_type': 'student'})
+    students = db.users.find({'name': {'$regex': query, '$options': 'i'}, 'user_type': 'student', 'suspended': 0})
     student_list = [{'name': student['name'], '_id': str(student['_id'])} for student in students]
     return jsonify(student_list)
 
