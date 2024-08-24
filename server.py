@@ -173,8 +173,7 @@ def submit_test(test_id):
         )
 
         # Record the test submission in the test history
-        existing_record = True if test_history.find_one({'user_id': user_id, 'test_id': ObjectId(test_id)}) else False
-        print(existing_record)
+        existing_record = True if test_history.find_one({'user_id': ObjectId(user_id), 'test_id': ObjectId(test_id)}) else False
 
         if existing_record:
             # Update the existing record with the new score
