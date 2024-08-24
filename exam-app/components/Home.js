@@ -15,7 +15,7 @@ const Home = ({ navigation }) => {
     <View style={styles.container}>
       <Appbar.Header style={styles.appbar}>
         <Appbar.Content title="Home" titleStyle={styles.appbarTitle} />
-        <Avatar.Icon size={40} icon="account-circle" color="#FFFFFF" style={styles.userIcon} />
+        <Avatar.Icon size={40} icon="account-circle" color="#000000" style={styles.userIcon} />
       </Appbar.Header>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.welcomeContainer}>
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   },
   userIcon: {
     marginRight: 16,
-    backgroundColor: '#AAAAAA'
+    backgroundColor: '#1E88E5'
   },
   content: {
     padding: 20,
