@@ -2,4 +2,9 @@
 
 An exam app built with React Native, Flask, and MongoDB
 
-<img src="app.jpg" width="20%" height="20%">
+<p float="left">
+    <img src="img/screenshot1.jpg" width="100">
+    <img src="img/screenshot2.jpg" width="100">
+    <img src="img/screenshot3.jpg" width="100">
+    <img src="img/screenshot4.jpg" width="100">
+</p>
