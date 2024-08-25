@@ -16,6 +16,7 @@ import AdminDashboard from './components/AdminDashboard';
 import TestHistory from './components/TestHistory';
 import ViewTestScores from './components/ViewTestScores';
 import AdminAccountCreation from './components/AdminAccountCreation';
+import EditUserPassword from './components/EditUserPassword';
 
 const Stack = createStackNavigator();
 
@@ -37,6 +38,7 @@ const AppNavigator = () => {
           <Stack.Screen name="TestHistory" component={TestHistory} />
           <Stack.Screen name="ViewTestScores" component={ViewTestScores} />
           <Stack.Screen name="AdminAccountCreation" component={AdminAccountCreation} />
+          <Stack.Screen name="EditUserPassword" component={EditUserPassword} />
     </Stack.Navigator>
   );
 };

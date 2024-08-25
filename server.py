@@ -393,5 +393,30 @@ def create_account():
 
     return jsonify({'message': f'{user_type.capitalize()} account created successfully!'}), 201
 
+@app.route('/users/<user_id>/update_password', methods=['PUT'])
+def update_password(user_id):
+    try:
+        data = request.get_json()
+        new_password = data.get('password')
+
+        if not new_password:
+            return jsonify({'error': 'New password is required'}), 400
+
+        user = users.find_one({'_id': ObjectId(user_id)})
+
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+
+        # Hash the new password
+        hashed_new_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+
+        # Update the password in the database
+        users.update_one({'_id': ObjectId(user_id)}, {'$set': {'password': hashed_new_password}})
+
+        return jsonify({'message': 'Password updated successfully'}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

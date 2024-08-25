@@ -55,7 +55,7 @@ const AdminDashboard = ({ navigation }) => {
 
   const renderUser = ({ item }) => (
     <View style={styles.cardContainer}>
-      <Card style={styles.card}>
+      <Card style={styles.card} onPress={() => navigation.navigate('EditUserPassword', { userId: item._id, userName: item.name })}>
         <Card.Content>
           <Text style={styles.userName}>{item.name}</Text>
           <Text style={styles.userType}>Type: {item.user_type}</Text>
