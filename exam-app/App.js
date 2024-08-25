@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { Provider as PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { UserProvider, UserContext } from './context/UserContext';
@@ -41,9 +42,11 @@ const AppNavigator = () => {
 const App = () => {
   return (
     <UserProvider>
-      <NavigationContainer>
-        <AppNavigator />
-      </NavigationContainer>
+      <PaperProvider>
+        <NavigationContainer>
+            <AppNavigator />
+        </NavigationContainer>
+      </PaperProvider>
     </UserProvider>
   );
 };

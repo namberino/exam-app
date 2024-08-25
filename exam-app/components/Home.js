@@ -1,6 +1,6 @@
-import React, { useContext } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { Card, Text, Appbar, Avatar } from 'react-native-paper';
+import React, { useContext, useState } from 'react';
+import { View, StyleSheet, ScrollView, Alert } from 'react-native';
+import { Card, Text, Appbar, Avatar, Menu, IconButton } from 'react-native-paper';
 import { UserContext } from '../context/UserContext';
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -9,13 +9,55 @@ function capitalizeFirstLetter(string) {
 }
 
 const Home = ({ navigation }) => {
-  const { user } = useContext(UserContext);
+  const { user, signOut } = useContext(UserContext);
+  const [menuVisible, setMenuVisible] = useState(false);
+
+  const openMenu = () => setMenuVisible(true);
+  const closeMenu = () => setMenuVisible(false);
+
+  const handleSignOut = () => {
+    Alert.alert(
+      "Sign Out",
+      "Are you sure you want to sign out?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Sign Out",
+          onPress: () => {
+            signOut();
+            navigation.replace('Login'); // Navigate back to the login screen
+          }
+        }
+      ]
+    );
+  };
 
   return (
     <View style={styles.container}>
       <Appbar.Header style={styles.appbar}>
         <Appbar.Content title="Home" titleStyle={styles.appbarTitle} />
-        <Avatar.Icon size={40} icon="account-circle" color="#000000" style={styles.userIcon} />
+        <Menu
+          visible={menuVisible}
+          onDismiss={closeMenu}
+          anchor={
+            <IconButton
+              icon="account-circle"
+              color="#000000"
+              size={30}
+              onPress={openMenu}
+            />
+          }
+        >
+          <Menu.Item
+            onPress={handleSignOut}
+            title="Sign Out"
+            titleStyle={styles.signOutTitle}
+            leadingIcon={() => <MaterialIcons name="exit-to-app" size={24} color="#E53935" />} // Add icon to the Sign Out button
+          />
+        </Menu>
       </Appbar.Header>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.welcomeContainer}>
@@ -122,10 +164,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: 'bold',
   },
-  userIcon: {
-    marginRight: 16,
-    backgroundColor: '#1E88E5'
-  },
   content: {
     padding: 20,
   },
@@ -155,6 +193,10 @@ const styles = StyleSheet.create({
   cardDescription: {
     color: '#455A64', // Greyish blue for text
     marginTop: 8,
+  },
+  signOutTitle: {
+    color: '#E53935', // Red color for sign out to emphasize importance
+    fontWeight: 'bold',
   },
 });
 
