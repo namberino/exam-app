@@ -366,6 +366,32 @@ def delete_question(question_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/admin/create_account', methods=['POST'])
+def create_account():
+    data = request.get_json()
+    
+    name = data['name']
+    user_type = data['user_type']
+    password = data['password'].encode('utf-8')
+    hashed = bcrypt.hashpw(password, bcrypt.gensalt())
+
+    # Ensure the user type is valid
+    if user_type not in ['student', 'teacher', 'admin']:
+        return jsonify({'error': 'Invalid user type'}), 400
+
+    # Check if the user already exists
+    if users.find_one({'name': name}):
+        return jsonify({'error': 'User already exists'}), 409
+
+    # Create the new user account
+    users.insert_one({
+        'name': name,
+        'user_type': user_type,
+        'password': hashed,
+        'suspended': 0
+    })
+
+    return jsonify({'message': f'{user_type.capitalize()} account created successfully!'}), 201
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

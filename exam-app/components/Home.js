@@ -66,16 +66,28 @@ const Home = ({ navigation }) => {
         </View>
 
         {user.userType === 'admin' && (
+          <>
           <Card style={styles.card} onPress={() => navigation.navigate('AdminDashboard')}>
             <Card.Title 
-              title="Admin Dashboard" 
+              title="Account Dashboard" 
               titleStyle={styles.cardTitle}
               left={(props) => <MaterialIcons name="dashboard" size={24} color="#1E88E5" />}
             />
             <Card.Content>
-              <Text style={styles.cardDescription}>Manage user accounts, view analytics, and control system settings.</Text>
+              <Text style={styles.cardDescription}>Manage user accounts.</Text>
             </Card.Content>
           </Card>
+          <Card style={styles.card} onPress={() => navigation.navigate('AdminAccountCreation')}>
+            <Card.Title 
+              title="Create Account" 
+              titleStyle={styles.cardTitle}
+              left={(props) => <MaterialIcons name="dashboard" size={24} color="#1E88E5" />}
+            />
+            <Card.Content>
+              <Text style={styles.cardDescription}>Create new user accounts.</Text>
+            </Card.Content>
+          </Card>
+          </>
         )}
 
         {user.userType === 'teacher' && (

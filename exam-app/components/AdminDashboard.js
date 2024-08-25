@@ -88,7 +88,7 @@ const AdminDashboard = ({ navigation }) => {
     <View style={styles.container}>
       <Appbar.Header style={styles.appbar}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Admin Dashboard" titleStyle={styles.appbarTitle} />
+        <Appbar.Content title="Account Dashboard" titleStyle={styles.appbarTitle} />
         <Appbar.Action icon="refresh" onPress={fetchUsers} />
       </Appbar.Header>
       <FlatList
