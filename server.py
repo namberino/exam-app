@@ -97,7 +97,7 @@ def get_questions():
         subject = subjects.find_one({"_id": ObjectId(question['subject_id'])})
         question['subject_id'] = str(question['subject_id'])
         question['subject'] = subject['name'] if subject else None
-    print(result)
+    # print(result)
     return jsonify(result)
 
 @app.route('/tests', methods=['POST'])
