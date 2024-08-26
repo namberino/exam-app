@@ -25,20 +25,20 @@ const AppNavigator = () => {
 
   return (
     <Stack.Navigator initialRouteName="Login">
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="Home" component={Home} />
-          <Stack.Screen name="QuestionUpload" component={QuestionUpload} />
-          <Stack.Screen name="TestCreation" component={TestCreation} />
-          <Stack.Screen name="TestList" component={TestList} />
-          <Stack.Screen name="TakeTest" component={TakeTest} />
-          <Stack.Screen name="TestResult" component={TestResult} />
-          <Stack.Screen name="ViewTestAnswers" component={ViewTestAnswers} />
-          <Stack.Screen name="QuestionManager" component={QuestionManager} />
-          <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
-          <Stack.Screen name="TestHistory" component={TestHistory} />
-          <Stack.Screen name="ViewTestScores" component={ViewTestScores} />
-          <Stack.Screen name="AdminAccountCreation" component={AdminAccountCreation} />
-          <Stack.Screen name="EditUserPassword" component={EditUserPassword} />
+      <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+      <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+          <Stack.Screen name="QuestionUpload" component={QuestionUpload} options={{ headerShown: false }} />
+          <Stack.Screen name="TestCreation" component={TestCreation} options={{ headerShown: false }} />
+          <Stack.Screen name="TestList" component={TestList} options={{ headerShown: false }} />
+          <Stack.Screen name="TakeTest" component={TakeTest} options={{ headerShown: false }} />
+          <Stack.Screen name="TestResult" component={TestResult} options={{ headerShown: false }} />
+          <Stack.Screen name="ViewTestAnswers" component={ViewTestAnswers} options={{ headerShown: false }} />
+          <Stack.Screen name="QuestionManager" component={QuestionManager} options={{ headerShown: false }} />
+          <Stack.Screen name="AdminDashboard" component={AdminDashboard} options={{ headerShown: false }} />
+          <Stack.Screen name="TestHistory" component={TestHistory} options={{ headerShown: false }} />
+          <Stack.Screen name="ViewTestScores" component={ViewTestScores} options={{ headerShown: false }} />
+          <Stack.Screen name="AdminAccountCreation" component={AdminAccountCreation} options={{ headerShown: false }} />
+          <Stack.Screen name="EditUserPassword" component={EditUserPassword} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 };

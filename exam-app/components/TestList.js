@@ -79,7 +79,7 @@ const TestList = ({ navigation }) => {
             <Appbar.Action
               icon="plus-circle-outline"
               onPress={() => navigation.navigate('TestCreation')}
-              color="#fff"
+              color="#000000"
             />
           )}
         </Appbar.Header>

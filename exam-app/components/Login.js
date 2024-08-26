@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#BBDEFB', // Light blue card background
     borderRadius: 8,
     padding: 20,
+    marginTop: 80,
   },
   cardTitle: {
     color: '#0D47A1', // Darker blue for card title
