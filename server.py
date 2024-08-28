@@ -178,7 +178,7 @@ def submit_test(test_id):
         if existing_record:
             # Update the existing record with the new score
             test_history.update_one(
-                {'user_id': user_id, 'test_id': ObjectId(test_id)},
+                {'user_id': ObjectId(user_id), 'test_id': ObjectId(test_id)},
                 {'$set': {'score': score}}
             )
         else:
