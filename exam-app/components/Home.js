@@ -50,12 +50,13 @@ const Home = ({ navigation }) => {
               onPress={openMenu}
             />
           }
+          style={styles.menu}
         >
           <Menu.Item
             onPress={handleSignOut}
             title="Sign Out"
             titleStyle={styles.signOutTitle}
-            leadingIcon={() => <MaterialIcons name="exit-to-app" size={24} color="#E53935" />} // Add icon to the Sign Out button
+            leadingIcon={() => <MaterialIcons name="exit-to-app" size={20} color="#E53935" />} // Add icon to the Sign Out button
           />
         </Menu>
       </Appbar.Header>
@@ -175,6 +176,9 @@ const styles = StyleSheet.create({
   appbarTitle: {
     color: '#FFFFFF',
     fontWeight: 'bold',
+  },
+  menu: {
+    paddingTop: 40,
   },
   content: {
     padding: 20,
